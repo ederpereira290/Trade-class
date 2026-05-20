@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Century Financial - Trader Pro Dashboard</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-main: #04060A;
+            --bg-card: #0A0F1D;
+            --bg-input: #111827;
+            --gold-accent: #FFD700;
+            --gold-glow: rgba(255, 215, 0, 0.2);
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --gain-color: #10B981;
+            --gain-glow: rgba(16, 185, 129, 0.15);
+            --loss-color: #EF4444;
+            --loss-glow: rgba(239, 68, 68, 0.15);
+            --border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+
+        /* TELA DE LOGIN / REGISTRO */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, #04060A 0%, #010204 100%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .login-logo {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #FFF;
+            margin-bottom: 35px;
+            text-align: center;
+            line-height: 1.1;
+        }
+        .login-logo span { color: var(--gold-accent); text-shadow: 0 0 15px var(--gold-glow); }
+
+        .login-container {
+            width: 100%;
+            max-width: 350px;
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+        }
+
+        .login-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .login-input-group i {
+            position: absolute;
+            left: 16px; top: 16px;
+            color: var(--text-muted);
+        }
+        .login-input-group input {
+            width: 100%;
+            padding: 15px 15px 15px 48px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: #FFF;
+            border-radius: 14px;
+            outline: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .login-input-group input:focus {
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .checkbox-container input {
+            accent-color: var(--gold-accent);
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold-accent), #C5A000);
+            border: none;
+            border-radius: 14px;
+            color: #000;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .switch-auth-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--gold-accent);
+            cursor: pointer;
+        }
+
+        .biometric-box {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .biometric-icon {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: rgba(255, 215, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--gold-accent);
+            border: 1px solid var(--gold-glow);
+            transition: all 0.3s;
+        }
+        .biometric-box span { font-size: 12px; color: var(--text-muted); }
+
+        /* INTERFACE DO APLICATIVO FIXED TOP */
+        #app-interface {
+            display: none;
+            height: 100vh;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* HEADER GLOBAL COM GRÁFICO EMBUTIDO */
+        .app-header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 12px 15px 5px 15px;
+            z-index: 100;
+        }
+        .header-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .header-logo { font-size: 16px; font-weight: 800; letter-spacing: 1px; }
+        .header-logo span { color: var(--gold-accent); }
+        .header-profile { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+        .header-profile i { color: var(--gold-accent); }
+
+        /* Espaço fixo do gráfico superior unificado */
+        .global-chart-wrapper {
+            width: 100%;
+            height: 130px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        /* ALERTA SUAVE DE OPERAÇÃO (HUD GLOBAL VISÍVEL EM TODAS AS TELAS) */
+        .operation-hud-alert {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 6px;
+            display: none; /* Ativado dinamicamente via JS */
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        .hud-buy {
+            background: rgba(16, 185, 129, 0.08);
+            color: var(--gain-color);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.1);
+        }
+        .hud-sell {
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--loss-color);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.1);
+        }
+
+        .main-scroll-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 95px;
+        }
+
+        .tab-section { display: none; padding: 15px; animation: fadeIn 0.2s ease-in-out; }
+        .tab-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .premium-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .card-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title i { color: var(--gold-accent); }
+
+        /* HOME ELEMENTS */
+        .balance-hero { text-align: center; padding: 15px 0 10px 0; }
+        .balance-hero p { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+        .balance-hero h1 { font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-top: 3px; color: #FFF; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+
+        .asset-quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .quick-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-box:hover { border-color: var(--gold-accent); background: rgba(255,215,0,0.02); }
+        .quick-box i { font-size: 18px; color: var(--gold-accent); margin-bottom: 6px; }
+        .quick-box span { display: block; font-size: 11px; font-weight: 700; }
+
+        /* LISTA DE MERCADOS AVANÇADA */
+        .market-subtabs { display: flex; background: var(--bg-input); border-radius: 14px; padding: 4px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .market-subtab-btn { flex: 1; padding: 12px; text-align: center; font-size: 11px; font-weight: 700; text-transform: uppercase; border-radius: 10px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
+        .market-subtab-btn.active { background: var(--bg-card); color: var(--gold-accent); border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        
+        .market-list-container { display: none; }
+        .market-list-container.active { display: block; }
+
+        /* ATIVO VISUAL PREMIUM STYLE */
+        .asset-row-premium {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+        }
+        .asset-row-premium:hover { border-color: rgba(255, 255, 255, 0.15); }
+        .asset-main-info { display: flex; align-items: center; gap: 12px; }
+        .asset-icon-badge {
+            width: 38px; height: 38px; background: var(--bg-input); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; border: 1px solid var(--border-color);
+        }
+        .asset-meta h4 { font-size: 14px; font-weight: 700; color: #FFF; }
+        .asset-meta p { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+        
+        .asset-metrics-live { text-align: right; }
+        .asset-live-price { font-size: 15px; font-weight: 700; color: #FFF; }
+        .asset-live-badge-box { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-top: 4px; }
+        .badge-up { background: rgba(16, 185, 129, 0.1); color: var(--gain-color); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-down { background: rgba(239, 68, 68, 0.1); color: var(--loss-color); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        /* STATUS BADGES TRADING STYLE */
+        .status-badge {
+            width: 100%; padding: 14px; border-radius: 14px; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px;
+        }
+        .status-idle { background: rgba(156,163,175,0.08); color: var(--text-muted); border: 1px solid rgba(156,163,175,0.2); }
+        .status-capturing { background: rgba(255,215,0,0.08); color: var(--gold-accent); border: 1px solid rgba(255,215,0,0.3); box-shadow: 0 0 10px var(--gold-glow); }
+        .status-waiting { background: rgba(59, 130, 246, 0.08); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .status-running { background: rgba(16,185,129,0.08); color: var(--gain-color); border: 1px solid rgba(16,185,129,0.3); box-shadow: 0 0 10px var(--gain-glow); }
+        .status-locked { background: rgba(239,68,68,0.08); color: var(--loss-color); border: 1px solid rgba(239,68,68,0.3); }
+
+        /* GRID LAYOUTS */
+        .flex-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .data-box { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 14px; border-radius: 14px; text-align: center; }
+        .data-box label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 5px; font-weight: 700; }
+        .data-box span { font-size: 15px; font-weight: 700; }
+
+        /* FORMULARIOS INTERFACE */
+        label.input-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 8px; }
+        select, input.app-input { width: 100%; padding: 15px; background: var(--bg-input); border: 1px solid var(--border-color); color: #FFF; border-radius: 14px; font-size: 14px; outline: none; margin-bottom: 15px; }
+        select:focus, input.app-input:focus { border-color: var(--gold-accent); }
+
+        .btn-action { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--gold-accent), #C5A000); border: none; color: #000; font-weight: 800; border-radius: 14px; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 1.5px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15); }
+        .btn-reset { background: transparent; border: 1px solid var(--loss-color); color: var(--loss-color); margin-top: 10px; box-shadow: none; }
+
+        /* INDICADORES TECNICOS */
+        .tech-indicator-container {
+            display: flex; justify-content: space-between; align-items: center; margin-top: 12px; background: var(--bg-input); padding: 10px 14px; border-radius: 10px; font-size: 11px;
+        }
+        .indicator-bar-bg { width: 70px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; position: relative; overflow: hidden; }
+        .indicator-bar-fill { height: 100%; background: var(--gold-accent); width: 50%; transition: width 0.3s; }
+
+        /* TABELA HISTÓRICO */
+        .trade-history-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .trade-history-table th { text-align: left; font-size: 10px; text-transform: uppercase; color: var(--text-muted); padding: 8px 4px; border-bottom: 1px solid var(--border-color); }
+        .trade-history-table td { padding: 12px 4px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.01); }
+        
+        .badge-result { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-gain { background: var(--gain-glow); color: var(--gain-color); border: 1px solid rgba(16,185,129,0.2); }
+        .badge-loss { background: var(--loss-glow); color: var(--loss-color); border: 1px solid rgba(239,68,68,0.2); }
+
+        .log-container { max-height: 120px; overflow-y: auto; font-size: 11px; font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .log-row { margin-bottom: 4px; color: var(--text-muted); }
+        .log-row.success { color: var(--gain-color); }
+        .log-row.alert { color: var(--gold-accent); }
+
+        /* BOTTOM NAVIGATION BAR */
+        .bottom-nav-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: rgba(10, 15, 29, 0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; z-index: 999; padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; width: 25%; height: 100%; }
+        .nav-tab-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-tab-item span { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-tab-item.active { color: var(--gold-accent); text-shadow: 0 0 10px var(--gold-glow); }
+
+        .chart-box { position: relative; width: 100%; height: 160px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-logo">CENTURY<br><span>FINANCIAL</span></div>
+        <div class="login-container" id="login-form-box">
+            <div class="login-input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="text" id="login-user" placeholder="E-mail do Operador">
+            </div>
+            <div class="login-input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="login-pass" placeholder="Senha Corporativa">
+            </div>
+            <button class="btn-login" onclick="autenticarApp(false)">Acessar Terminal</button>
+            <div class="switch-auth-link" onclick="alternarTelasAutenticacao(true)">Solicitar Novo Registro</div>
+            <div class="biometric-box" onclick="autenticarApp(true)">
+                <div class="biometric-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                <span>Acesso Biométrico Instantâneo</span>
+            </div>
+        </div>
+
+        <div class="login-container" id="register-form-box" style="display: none;">
+            <div class="login-input-group">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="reg-user" placeholder="Nome do Trader">
+            </div>
+            <div class="login-input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="reg-email" placeholder="E-mail Institucional">
+            </div>
+            <div class="login-input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="reg-pass" placeholder="Criar Senha de Acesso">
+            </div>
+            <label class="checkbox-container">
+                <input type="checkbox" id="reg-bio" checked>
+                Vincular Biometria Deste Aparelho
+            </label>
+            <button class="btn-login" onclick="registrarUsuario()">Gravar Credenciais</button>
+            <div class="switch-auth-link" onclick="alternarTelasAutenticacao(false)">Retornar ao Login</div>
+        </div>
+    </div>
+
+    <div id="app-interface">
+        
+        <div class="app-header">
+            <div class="header-top-row">
+                <div class="header-logo">CENTURY <span>PRO MASTER</span></div>
+                <div class="header-profile">
+                    <span id="header-user-name" class="mono">Trader</span>
+                    <i class="fa-solid fa-circle-user"></i>
+                </div>
+            </div>
+            
+            <div class="global-chart-wrapper">
+                <canvas id="chartPrincipal"></canvas>
+            </div>
+
+            <div id="global-operation-hud" class="operation-hud-alert">
+                <i class="fa-solid fa-circle-nodes fa-spin"></i>
+                <span id="txt-global-hud-content">AGUARDANDO SINAL...</span>
+            </div>
+        </div>
+
+        <div class="main-scroll-content">
+            
+            <div id="tab-home" class="tab-section active">
+                <div class="balance-hero">
+                    <p>Net Liquidity (Equity)</p>
+                    <h1 id="txt-banca-hero" class="mono">$ 1,000.00</h1>
+                </div>
+
+                <div class="asset-quick-grid">
+                    <div class="quick-box" onclick="mudarAba('tab-market'); filtrarMercado('moedas')">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                        <span>Forex</span>
+                    </div>
+                    <div class="quick-box" onclick="mudarAba('tab-market'); filtrarMercado('commodities')">
+                        <i class="fa-solid fa-gem"></i>
+                        <span>XAU Spot</span>
+                    </div>
+                    <div class="quick-box" onclick="mudarAba('tab-market'); filtrarMercado('indices')">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        <span>Indices</span>
+                    </div>
+                </div>
+
+                <div class="premium-card">
+                    <div class="card-title"><i class="fa-solid fa-chart-area"></i>Evolução Patrimonial Consolidada</div>
+                    <div class="chart-box">
+                        <canvas id="chartPatrimonio"></canvas>
+                    </div>
+                </div>
+
+                <div class="premium-card">
+                    <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i>Últimos Trades Encerrados</div>
+                    <table class="trade-history-table">
+                        <thead>
+                            <tr>
+                                <th>Horário</th>
+                                <th>Ativo</th>
+                                <th>Tipo</th>
+                                <th>Resultado ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-rows-home">
+                            <tr><td colspan="4" style="color:var(--text-muted); text-align:center;">Aguardando primeiro fechamento...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-market" class="tab-section">
+                <div class="market-subtabs">
+                    <div class="market-subtab-btn active" id="subbtn-moedas" onclick="filtrarMercado('moedas')">Moedas</div>
+                    <div class="market-subtab-btn" id="subbtn-indices" onclick="filtrarMercado('indices')">Índices</div>
+                    <div class="market-subtab-btn" id="subbtn-commodities" onclick="filtrarMercado('commodities')">Cripto & Metais</div>
+                </div>
+
+                <div id="list-moedas" class="market-list-container active">
+                    <div class="asset-row-premium">
+                        <div class="asset-main-info">
+                            <div class="asset-icon-badge" style="color: #60A5FA;">EU</div>
+                            <div class="asset-meta"><h4>EUR/USD</h4><p>Euro / US Dollar • Live</p></div>
+                        </div>
+                        <div class="asset-metrics-live">
+                            <div class="asset-live-price mono" id="price-eurusd">1.0852</div>
+                            <div class="asset-live-badge-box badge-up mono" id="chg-eurusd">+0.12%</div>
+                        </div>
+                    </div>
+                    <div class="asset-row-premium">
+                        <div class="asset-main-info">
+                            <div class="asset-icon-badge" style="color: #F472B6;">GB</div>
+                            <div class="asset-meta"><h4>GBP/USD</h4><p>Pound / US Dollar • Live</p></div>
+                        </div>
+                        <div class="asset-metrics-live">
+                            <div class="asset-live-price mono" id="price-gbpusd">1.2645</div>
+                            <div class="asset-live-badge-box badge-down mono" id="chg-gbpusd">-0.08%</div>
+                        </div>
+                    </div>
+                    <div class="asset-row-premium">
+                        <div class="asset-main-info">
+                            <div class="asset-icon-badge" style="color: #34D399;">JP</div>
+                            <div class="asset-meta"><h4>USD/JPY</h4><p>US Dollar / Yen • Live</p></div>
+                        </div>
+                        <div class="asset-metrics-live">
+                            <div class="asset-live-price mono" id="price-usdjpy">150.32</div>
+                            <div class="asset-live-badge-box badge-up mono" id="chg-usdjpy">+0.24%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="list-indices" class="market-list-container">
+                    <div class="asset-row-premium">
+                        <div class="asset-main-info">
+                            <div class="asset-icon-badge" style="color: #F87171;">SP</div>
+                            <div class="asset-meta"><h4>US500</h4><p>S&P 500 Index Derivatives</p></div>
+                        </div>
+                        <div class="asset-metrics-live">
+                            <div class="asset-live-price mono" id="price-us500">5183.15</div>
+                            <div class="asset-live-badge-box badge-up mono" id="chg-us500">+0.42%</div>
+                        </div>
+                    </div>
+                    <div class="asset-row-premium">
+                        <div class="asset-main-info">
+                            <div class="asset-icon-badge" style="color: #38BDF8;">NQ</div>
+                            <div class="asset-meta"><h4>NAS100</h4><p>Nasdaq 100 Heavy Tech</p></div>
+                        </div>
+                        <div class="asset-metrics-live">
+                            <div class="asset-live-price mono" id="price-nas100">18240.60</div>
+                            <div class="asset-live-badge-box badge-up mono" id="chg-nas100">+0.78%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="list-commodities" class="market-list-container">
+                    <div class="asset-row-premium" style="border-color: var(--gold-accent); background: rgba(255,215,0,0.02);">
+                        <div class="asset-main-info">
+                            <div class="asset-icon-badge" style="color: var(--gold-accent); background: rgba(255,215,0,0.05);">AU</div>
+                            <div class="asset-meta"><h4>XAU/USD (ALVO)</h4><p style="color: var(--gold-accent);">Ouro Spot • Feed Global</p></div>
+                        </div>
+                        <div class="asset-metrics-live">
+                            <div class="asset-live-price mono" id="price-xauusd" style="color: var(--gold-accent); font-weight: 800;">$ 0.00</div>
+                            <div class="asset-live-badge-box badge-up mono" style="background: rgba(255,215,0,0.1); color: var(--gold-accent); border-color: rgba(255,215,0,0.3)">WEB-STREAM</div>
+                        </div>
+                    </div>
+                    <div class="asset-row-premium">
+                        <div class="asset-main-info">
+                            <div class="asset-icon-badge" style="color: #F59E0B;">⚡</div>
+                            <div class="asset-meta"><h4>BTC/USD</h4><p>Bitcoin Spot Crypto</p></div>
+                        </div>
+                        <div class="asset-metrics-live">
+                            <div class="asset-live-price mono" id="price-btcusd">67420.50</div>
+                            <div class="asset-live-badge-box badge-up mono" id="chg-btcusd">+2.41%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-trades" class="tab-section">
+                <div id="lbl-status" class="status-badge status-idle">Barramento Pronto</div>
+
+                <div class="premium-card">
+                    <div class="card-title"><i class="fa-solid fa-chart-line"></i>Métricas do Canal Real-time</div>
+                    <div class="tech-indicator-container">
+                        <div>RSI (14): <span id="lbl-rsi-val" class="mono" style="color: var(--gold-accent)">50.2</span></div>
+                        <div class="indicator-bar-bg"><div id="bar-rsi" class="indicator-bar-fill"></div></div>
+                        <div>VOL: <span id="lbl-vol-val" class="mono">K4.2</span></div>
+                    </div>
+
+                    <div class="flex-grid-2" style="margin-top: 15px;">
+                        <div class="data-box"><label>Máxima Canal</label><span id="lbl-max" class="mono">-</span></div>
+                        <div class="data-box"><label>Mínima Canal</label><span id="lbl-min" class="mono">-</span></div>
+                    </div>
+                </div>
+
+                <div class="premium-card">
+                    <div class="card-title"><i class="fa-solid fa-bullseye"></i>Ordens & Matriz de Risco</div>
+                    <div class="flex-grid-2">
+                        <div class="data-box" style="border-color: rgba(16,185,129,0.2);"><label style="color:var(--gain-color)">Alvo Projetado</label><span id="lbl-alvo" class="mono" style="color:var(--gain-color)">-</span></div>
+                        <div class="data-box" style="border-color: rgba(239,68,68,0.2);"><label style="color:var(--loss-color)">Stop Técnico</label><span id="lbl-stop" class="mono" style="color:var(--loss-color)">-</span></div>
+                    </div>
+                    <div class="data-box"><label>Tamanho do Lote Automatizado</label><span id="lbl-lote" class="mono" style="color:var(--gold-accent); font-weight:700;">LOTE: 0.00</span></div>
+                </div>
+
+                <div class="premium-card">
+                    <div class="card-title"><i class="fa-solid fa-code"></i>Console de Execução</div>
+                    <div class="log-container" id="terminal-log">
+                        <div class="log-row">[SYSTEM] Terminal Century Pro inicializado.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-risk" class="tab-section">
+                
+                <div class="premium-card" style="border-color: var(--gold-accent); background: rgba(255,215,0,0.01);">
+                    <div class="card-title"><i class="fa-solid fa-power-off"></i>Controle de Ignição & Sincronismo</div>
+                    
+                    <div class="flex-grid-2">
+                        <div>
+                            <label class="input-label">Início da Captura</label>
+                            <input type="time" id="cfg-hora-ini" class="app-input mono" value="10:05" onchange="salvarConfiguracoes()">
+                        </div>
+                        <div>
+                            <label class="input-label">Fim da Captura</label>
+                            <input type="time" id="cfg-hora-fim" class="app-input mono" value="10:25" onchange="salvarConfiguracoes()">
+                        </div>
+                    </div>
+
+                    <label class="input-label">Tempo de Confirmação Gráfica</label>
+                    <select id="cfg-tempo" onchange="salvarConfiguracoes()">
+                        <option value="1" selected>M1 (Vela de 1 Minuto)</option>
+                        <option value="5">M5 (Vela de 5 Minutos)</option>
+                        <option value="15">M15 (Vela de 15 Minutos)</option>
+                    </select>
+
+                    <button class="btn-action" style="margin-top: 5px;" onclick="armarProximoCiclo()"><i class="fa-solid fa-play"></i> Inicializar Motor Operacional</button>
+                </div>
+
+                <div class="premium-card">
+                    <div class="card-title"><i class="fa-solid fa-shield-halved"></i>Calibração de Banca & Drawdown</div>
+                    <label class="input-label">Perfil de Perda Diária Permitida</label>
+                    <select id="cfg-perfil" onchange="salvarConfiguracoes()">
+                        <option value="0.01" selected>1% Diário (Conservador)</option>
+                        <option value="0.02">2% Diário (Moderado)</option>
+                        <option value="0.03">3% Diário (Agressivo)</option>
+                    </select>
+
+                    <label class="input-label">Banca Operacional Atual ($)</label>
+                    <input type="number" id="cfg-banca" class="app-input mono" value="1000" onchange="salvarConfiguracoes()">
+
+                    <label class="input-label">Risco Financeiro Fixo por Operação ($)</label>
+                    <input type="number" id="cfg-risco" class="app-input mono" value="20" onchange="salvarConfiguracoes()">
+                    
+                    <label class="input-label">Ajuste Fino de Preço (Offset)</label>
+                    <input type="number" id="cfg-offset" class="app-input mono" step="0.05" value="0.00" onchange="salvarConfiguracoes()">
+                </div>
+
+                <button class="btn-action btn-reset" onclick="reiniciarDeFabrica()"><i class="fa-solid fa-trash-can"></i> Limpar Dados (Preservar Operador)</button>
+            </div>
+
+        </div>
+
+        <div class="bottom-nav-bar">
+            <div class="nav-tab-item active" id="nav-home" onclick="mudarAba('tab-home')">
+                <i class="fa-solid fa-grip"></i><span>Home</span>
+            </div>
+            <div class="nav-tab-item" id="nav-market" onclick="mudarAba('tab-market')">
+                <i class="fa-solid fa-chart-simple"></i><span>Market</span>
+            </div>
+            <div class="nav-tab-item" id="nav-trades" onclick="mudarAba('tab-trades')">
+                <i class="fa-solid fa-bolt"></i><span>Trades</span>
+            </div>
+            <div class="nav-tab-item" id="nav-risk" onclick="mudarAba('tab-risk')">
+                <i class="fa-solid fa-shield-blank"></i><span>Risco</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const TELEGRAM_TOKEN = "8769312904:AAEOyCHSl9KrJWPSILVEawP33aFE1jtZtPc";
+        const CHAT_ID = "7005917787";
+
+        let precoReal = 0;
+        let historicoPrecos = [];
+        let chartPrincipal;
+        let chartPatrimonio;
+        let ws;
+        const noSleep = new NoSleep();
+
+        let banca = parseFloat(localStorage.getItem('banca')) || 1000.00;
+        let riscoFixo = parseFloat(localStorage.getItem('risco')) || 20.00;
+        let offsetPreco = parseFloat(localStorage.getItem('offset')) || 0.00;
+        let operacoes = JSON.parse(localStorage.getItem('operacoes')) || [];
+        let historicoBanca = JSON.parse(localStorage.getItem('historicoBanca')) || [1000.00];
+        let statusRobo = localStorage.getItem('statusRobo') || "DESLIGADO";
+
+        let maxCanal = parseFloat(localStorage.getItem('maxCanal')) || -Infinity;
+        let minCanal = parseFloat(localStorage.getItem('minCanal')) || Infinity;
+        let alvoOperacao = parseFloat(localStorage.getItem('alvoOperacao')) || 0;
+        let stopOperacao = parseFloat(localStorage.getItem('stopOperacao')) || 0;
+        let tipoEntrada = localStorage.getItem('tipoEntrada') || "";
+
+        let basePrices = { eurusd: 1.0852, gbpusd: 1.2645, usdjpy: 150.32, audusd: 0.6521, usdcad: 1.3548, us500: 5183.15, us30: 39120.40, nas100: 18240.60, ger40: 17910.20, usoil: 82.45, btcusd: 67420.50, ethusd: 3485.10 };
+
+        function alternarTelasAutenticacao(mostrarCadastro) {
+            if (mostrarCadastro) {
+                document.getElementById('login-form-box').style.display = 'none';
+                document.getElementById('register-form-box').style.display = 'block';
+            } else {
+                document.getElementById('login-form-box').style.display = 'block';
+                document.getElementById('register-form-box').style.display = 'none';
+            }
+        }
+
+        function registrarUsuario() {
+            let nome = document.getElementById('reg-user').value.trim();
+            let email = document.getElementById('reg-email').value.trim();
+            let pass = document.getElementById('reg-pass').value.trim();
+            let bioAtiva = document.getElementById('reg-bio').checked;
+
+            if (!nome || !email || !pass) {
+                alert("Preencha todos os campos regulamentares.");
+                return;
+            }
+
+            let dadosUsuario = { nome: nome, email: email, senha: pass, biometria: bioAtiva };
+            localStorage.setItem('usuario_century', JSON.stringify(dadosUsuario));
+            document.getElementById('header-user-name').innerText = nome;
+            alert("Cadastro gravado!");
+            alternarTelasAutenticacao(false);
+            document.getElementById('login-user').value = email;
+        }
+
+        function autenticarApp(isBiometric) {
+            let dadosSalvos = localStorage.getItem('usuario_century');
+            if (!dadosSalvos) { alert("Nenhum registro encontrado."); return; }
+            let usuario = JSON.parse(dadosSalvos);
+
+            if (isBiometric) {
+                if (!usuario.biometria) { alert("Biometria não ativada."); return; }
+                document.querySelector('.biometric-icon').style.borderColor = 'var(--gain-color)';
+            } else {
+                let emailInput = document.getElementById('login-user').value.trim();
+                let passInput = document.getElementById('login-pass').value.trim();
+                if (emailInput !== usuario.email || passInput !== usuario.senha) { alert("Acesso negado."); return; }
+            }
+
+            document.getElementById('header-user-name').innerText = usuario.nome;
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-interface').style.display = 'flex';
+            
+            noSleep.enable();
+            inicializarGraficos();
+            conectarWebSocket();
+            atualizarPainelVisual();
+            atualizarTabelaHistorico();
+            logTerminal("Terminal operacional autorizado.");
+        }
+
+        function mudarAba(tabId) {
+            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-tab-item').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            const navId = tabId.replace('tab-', 'nav-');
+            if(document.getElementById(navId)) document.getElementById(navId).classList.add('active');
+        }
+
+        function filtrarMercado(categoria) {
+            document.querySelectorAll('.market-list-container').forEach(list => list.classList.remove('active'));
+            document.querySelectorAll('.market-subtab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('list-' + categoria).classList.add('active');
+            document.getElementById('subbtn-' + categoria).classList.add('active');
+        }
+
+        function logTerminal(texto, tipo = '') {
+            const container = document.getElementById('terminal-log');
+            if(!container) return;
+            const row = document.createElement('div');
+            row.className = `log-row ${tipo}`;
+            row.innerText = `[${new Date().toLocaleTimeString()}] ${texto}`;
+            container.appendChild(row);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function enviarTelegram(msg) {
+            const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`;
+            try { await fetch(url); } catch (e) { console.error(e); }
+        }
+
+        function inicializarGraficos() {
+            const ctx1 = document.getElementById('chartPrincipal').getContext('2d');
+            chartPrincipal = new Chart(ctx1, {
+                type: 'line',
+                data: { 
+                    labels: [], 
+                    datasets: [
+                        { label: 'Ouro', data: [], borderColor: '#FFD700', borderWidth: 2, pointRadius: 0, tension: 0.1, fill: false },
+                        { label: 'Máxima', data: [], borderColor: '#FFFFFF', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
+                        { label: 'Mínima', data: [], borderColor: '#627D98', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
+                        { label: 'Take', data: [], borderColor: '#10B981', borderDash: [2, 2], borderWidth: 1.5, pointRadius: 0, fill: false },
+                        { label: 'Loss', data: [], borderColor: '#EF4444', borderDash: [2, 2], borderWidth: 1.5, pointRadius: 0, fill: false }
+                    ] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        x: { display: false }, 
+                        y: { grid: { color: 'rgba(255,255,255,0.01)' }, ticks: { color: '#6B7280', font: { size: 9, family: 'JetBrains Mono' } } } 
+                    } 
+                }
+            });
+
+            const ctx2 = document.getElementById('chartPatrimonio').getContext('2d');
+            chartPatrimonio = new Chart(ctx2, {
+                type: 'line',
+                data: { labels: Array(historicoBanca.length).fill(""), datasets: [{ data: historicoBanca, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.01)', borderWidth: 2, fill: true, pointRadius: 1 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#9CA3AF', font: { size: 10, family: 'JetBrains Mono' } } } } }
+            });
+        }
+
+        function conectarWebSocket() {
+            if (ws) ws.close();
+            ws = new WebSocket('wss://stream.binance.com:9443/ws/paxgusdt@ticker');
+            
+            ws.onmessage = (event) => {
+                let dados = JSON.parse(event.data);
+                precoReal = parseFloat(dados.c) + offsetPreco;
+                document.getElementById('price-xauusd').innerText = "$ " + precoReal.toFixed(2);
+                
+                let rsiSimulado = (50 + Math.sin(Date.now() / 5000) * 15 + (Math.random() * 2)).toFixed(1);
+                if(document.getElementById('lbl-rsi-val')) {
+                    document.getElementById('lbl-rsi-val').innerText = rsiSimulado;
+                    document.getElementById('bar-rsi').style.width = rsiSimulado + "%";
+                    document.getElementById('lbl-vol-val').innerText = "K" + (4 + Math.random() * 3).toFixed(1);
+                }
+
+                atualizarMercadoVivo();
+
+                historicoPrecos.push(precoReal);
+                chartPrincipal.data.labels.push("");
+                chartPrincipal.data.datasets[0].data.push(precoReal);
+                
+                if (historicoPrecos.length > 50) {
+                    historicoPrecos.shift();
+                    chartPrincipal.data.labels.shift();
+                    chartPrincipal.data.datasets[0].data.shift();
+                }
+
+                redesenharLinhasEstrategicas();
+                chartPrincipal.update('none');
+                executarRegrasEstrategia();
+            };
+            ws.onclose = () => { setTimeout(conectarWebSocket, 4000); };
+        }
+
+        function atualizarMercadoVivo() {
+            let assets = ['eurusd', 'gbpusd', 'usdjpy', 'us500', 'nas100', 'btcusd'];
+            assets.forEach(asset => {
+                let multiplier = asset === 'btcusd' ? 12.0 : 0.0002;
+                if(asset==='us500' || asset==='nas100') multiplier = 0.25;
+                let delta = (Math.random() * 2 - 1) * multiplier;
+                basePrices[asset] += delta;
+                let elem = document.getElementById(`price-${asset}`);
+                if(elem) {
+                    let precision = asset.includes('usd') && !asset.includes('jpy') && !asset.includes('btc') ? 4 : 2;
+                    elem.innerText = basePrices[asset].toFixed(precision);
+                }
+            });
+        }
+
+        function redesenharLinhasEstrategicas() {
+            let len = historicoPrecos.length;
+            chartPrincipal.data.datasets[1].data = (maxCanal !== -Infinity && maxCanal !== null) ? Array(len).fill(maxCanal) : [];
+            chartPrincipal.data.datasets[2].data = (minCanal !== Infinity && minCanal !== null) ? Array(len).fill(minCanal) : [];
+            chartPrincipal.data.datasets[3].data = alvoOperacao > 0 ? Array(len).fill(alvoOperacao) : [];
+            chartPrincipal.data.datasets[4].data = stopOperacao > 0 ? Array(len).fill(stopOperacao) : [];
+        }
+
+        function executarRegrasEstrategia() {
+            let badge = document.getElementById('lbl-status');
+            let globalHud = document.getElementById('global-operation-hud');
+            let globalHudTxt = document.getElementById('txt-global-hud-content');
+            
+            if (statusRobo === "BLOQUEADO_DIARIO") {
+                if(badge) { badge.className = "status-badge status-locked"; badge.innerText = "🛑 DRAWDOW LIMIT"; }
+                globalHud.style.display = "flex";
+                globalHud.className = "operation-hud-alert hud-sell";
+                globalHudTxt.innerText = "TRAVA DE RISCO DIÁRIA ATIVADA";
+                return;
+            }
+
+            let agora = new Date();
+            let horaAtual = (agora.getHours() < 10 ? '0' : '') + agora.getHours() + ":" + (agora.getMinutes() < 10 ? '0' : '') + agora.getMinutes();
+            let hIni = document.getElementById('cfg-hora-ini').value;
+            let hFim = document.getElementById('cfg-hora-fim').value;
+
+            if (statusRobo === "AGUARDANDO_HORA" && horaAtual >= hIni && horaAtual < hFim) {
+                statusRobo = "CAPTURANDO";
+                maxCanal = -Infinity; minCanal = Infinity;
+                localStorage.setItem('statusRobo', statusRobo);
+                logTerminal("Filtro cronometrado acionado. Iniciando Varredura.", "alert");
+            }
+
+            if (statusRobo === "CAPTURANDO") {
+                globalHud.style.display = "flex";
+                globalHud.className = "operation-hud-alert";
+                globalHud.style.borderColor = "var(--gold-accent)";
+                globalHudTxt.innerHTML = `<span style="color:var(--gold-accent)">MEDINDO CANAL ATIVO (${horaAtual} ➔ ${hFim})</span>`;
+
+                if (badge) { badge.className = "status-badge status-capturing"; badge.innerText = `Varrendo Canal...`; }
+                if (precoReal > maxCanal) maxCanal = precoReal;
+                if (precoReal < minCanal) minCanal = precoReal;
+                
+                document.getElementById('lbl-max').innerText = "$ " + maxCanal.toFixed(2);
+                document.getElementById('lbl-min').innerText = "$ " + minCanal.toFixed(2);
+                localStorage.setItem('maxCanal', maxCanal);
+                localStorage.setItem('minCanal', minCanal);
+
+                if (horaAtual >= hFim) {
+                    statusRobo = "ESPERANDO_ROMPIMENTO";
+                    localStorage.setItem('statusRobo', statusRobo);
+                    calcularLoteSugerido();
+                    logTerminal(`Canal medido com sucesso.`);
+                }
+            }
+
+            if (statusRobo === "ESPERANDO_ROMPIMENTO") {
+                globalHud.style.display = "flex";
+                globalHudTxt.innerText = "AGUARDANDO VIOLAÇÃO DO SUPORTE / RESISTÊNCIA";
+                if(badge) { badge.className = "status-badge status-waiting"; badge.innerText = "Aguardando Rompimento"; }
+
+                if (agora.getSeconds() === 0 && (agora.getMinutes() % parseInt(document.getElementById('cfg-tempo').value) === 0)) {
+                    let pontosCanal = maxCanal - minCanal;
+                    if (precoReal > maxCanal) {
+                        tipoEntrada = "COMPRA";
+                        alvoOperacao = maxCanal + pontosCanal; stopOperacao = minCanal;
+                        dispararOrdemAoVivo();
+                    } else if (precoReal < minCanal) {
+                        tipoEntrada = "VENDA";
+                        alvoOperacao = minCanal - pontosCanal; stopOperacao = maxCanal;
+                        dispararOrdemAoVivo();
+                    }
+                }
+            }
+
+            if (statusRobo === "EM_OPERACAO") {
+                if(badge) { badge.className = "status-badge status-running"; badge.innerText = `Ordem Executada: ${tipoEntrada}`; }
+                
+                // CRIAÇÃO DO ALERTA SUAVE VERDE OU VERMELHO DINÂMICO GLOBAL EM QUALQUE TELA
+                globalHud.style.display = "flex";
+                if(tipoEntrada === "COMPRA") {
+                    globalHud.className = "operation-hud-alert hud-buy";
+                    globalHudTxt.innerHTML = `🟢 OPERAÇÃO ATIVA: COMPRA XAUUSD | ENTRADA: ${maxCanal.toFixed(2)} | ALVO: ${alvoOperacao.toFixed(2)}`;
+                    if (precoReal >= alvoOperacao) liquidarTrade(true);
+                    else if (precoReal <= stopOperacao) liquidarTrade(false);
+                } else {
+                    globalHud.className = "operation-hud-alert hud-sell";
+                    globalHudTxt.innerHTML = `🔴 OPERAÇÃO ATIVA: VENDA XAUUSD | ENTRADA: ${minCanal.toFixed(2)} | ALVO: ${alvoOperacao.toFixed(2)}`;
+                    if (precoReal <= alvoOperacao) liquidarTrade(true);
+                    else if (precoReal >= stopOperacao) liquidarTrade(false);
+                }
+            }
+
+            if(statusRobo === "DESLIGADO" && statusRobo !== "BLOQUEADO_DIARIO") {
+                globalHud.style.display = "none";
+            }
+        }
+
+        function calcularLoteSugerido() {
+            let pts = Math.abs(maxCanal - minCanal) * 100;
+            if (pts <= 0) return;
+            let lote = riscoFixo / pts;
+            document.getElementById('lbl-lote').innerText = "LOTE SUGERIDO: " + Math.max(0.01, lote).toFixed(2);
+        }
+
+        function dispararOrdemAoVivo() {
+            statusRobo = "EM_OPERACAO";
+            localStorage.setItem('statusRobo', statusRobo);
+            localStorage.setItem('alvoOperacao', alvoOperacao);
+            localStorage.setItem('stopOperacao', stopOperacao);
+            localStorage.setItem('tipoEntrada', tipoEntrada);
+
+            document.getElementById('lbl-alvo').innerText = "$ " + alvoOperacao.toFixed(2);
+            document.getElementById('lbl-stop').innerText = "$ " + stopOperacao.toFixed(2);
+            logTerminal(`Rompimento Confirmado! Motor posicionado em ${tipoEntrada}`, "alert");
+            enviarTelegram(`🚀 *Century Trade Start*\nAtivo: XAUUSD\nTipo: ${tipoEntrada}\nEntrada: $${precoReal.toFixed(2)}`);
+        }
+
+        function liquidarTrade(foiGain) {
+            let resultadoFinanceiro = foiGain ? (riscoFixo * 0.95) : riscoFixo;
+            if (foiGain) { banca += resultadoFinanceiro; logTerminal(`Take Profit Atingido! +$${resultadoFinanceiro.toFixed(2)}`, "success"); }
+            else { banca -= resultadoFinanceiro; logTerminal(`Stop Loss Atrapalhado. -$${resultadoFinanceiro.toFixed(2)}`, "alert"); }
+
+            operacoes.unshift({ horario: new Date().toLocaleTimeString(), ativo: 'XAUUSD', tipo: tipoEntrada, resultado: foiGain ? 'GAIN' : 'LOSS', valor: resultadoFinanceiro });
+            historicoBanca.push(parseFloat(banca.toFixed(2)));
+            
+            verificarDrawdownDiario();
+
+            maxCanal = -Infinity; minCanal = Infinity; alvoOperacao = 0; stopOperacao = 0; tipoEntrada = "";
+            statusRobo = "DESLIGADO";
+            localStorage.setItem('statusRobo', statusRobo);
+
+            salvarDadosPainel();
+            atualizarPainelVisual();
+            atualizarTabelaHistorico();
+        }
+
+        function verificarDrawdownDiario() {
+            let totalPerdas = operacoes.filter(o => o.resultado === 'LOSS').reduce((acc, o) => acc + o.valor, 0);
+            if (totalPerdas >= (banca * parseFloat(document.getElementById('cfg-perfil').value))) {
+                statusRobo = "BLOQUEADO_DIARIO";
+                localStorage.setItem('statusRobo', statusRobo);
+            }
+        }
+
+        function atualizarTabelaHistorico() {
+            const container = document.getElementById('history-rows-home');
+            if (operacoes.length === 0) return;
+            container.innerHTML = "";
+            operacoes.slice(0, 3).forEach(op => {
+                let row = document.createElement('tr');
+                row.innerHTML = `<td class="mono">${op.horario}</td><td><b>${op.ativo}</b></td><td><span style="color:${op.tipo==='COMPRA'?'var(--gain-color)':'var(--loss-color)'}">${op.tipo}</span></td><td><span class="badge-result ${op.resultado==='GAIN'?'badge-gain':'badge-loss'}">$${op.valor.toFixed(2)}</span></td>`;
+                container.appendChild(row);
+            });
+        }
+
+        function salvarConfiguracoes() {
+            banca = parseFloat(document.getElementById('cfg-banca').value) || 1000;
+            riscoFixo = parseFloat(document.getElementById('cfg-risco').value) || 20;
+            offsetPreco = parseFloat(document.getElementById('cfg-offset').value) || 0;
+            salvarDadosPainel();
+            atualizarPainelVisual();
+        }
+
+        function salvarDadosPainel() {
+            localStorage.setItem('banca', banca);
+            localStorage.setItem('risco', riscoFixo);
+            localStorage.setItem('offset', offsetPreco);
+            localStorage.setItem('operacoes', JSON.stringify(operacoes));
+            localStorage.setItem('historicoBanca', JSON.stringify(historicoBanca));
+        }
+
+        function atualizarPainelVisual() {
+            document.getElementById('txt-banca-hero').innerText = "$ " + banca.toFixed(2);
+            document.getElementById('cfg-banca').value = banca.toFixed(2);
+            document.getElementById('cfg-risco').value = riscoFixo;
+            document.getElementById('cfg-offset').value = offsetPreco;
+            document.getElementById('lbl-max').innerText = maxCanal !== -Infinity ? "$ " + maxCanal.toFixed(2) : "-";
+            document.getElementById('lbl-min').innerText = minCanal !== Infinity ? "$ " + minCanal.toFixed(2) : "-";
+            document.getElementById('lbl-alvo').innerText = alvoOperacao > 0 ? "$ " + alvoOperacao.toFixed(2) : "-";
+            document.getElementById('lbl-stop').innerText = stopOperacao > 0 ? "$ " + stopOperacao.toFixed(2) : "-";
+            if (chartPatrimonio) { chartPatrimonio.data.datasets[0].data = historicoBanca; chartPatrimonio.update(); }
+        }
+
+        function armarProximoCiclo() {
+            if (statusRobo === "BLOQUEADO_DIARIO") { alert("Bloqueio ativo."); return; }
+            statusRobo = "AGUARDANDO_HORA";
+            maxCanal = -Infinity; minCanal = Infinity; alvoOperacao = 0; stopOperacao = 0; tipoEntrada = "";
+            localStorage.setItem('statusRobo', statusRobo);
+            atualizarPainelVisual();
+            logTerminal("Estratégia Inicializada via painel de Controle.");
+            alert("Motor Operacional Century Inicializado!");
+        }
+
+        function reiniciarDeFabrica() {
+            if (confirm("Deseja redefinir as métricas de mercado? (Seu operador continuará conectado)")) {
+                let backup = localStorage.getItem('usuario_century');
+                localStorage.clear();
+                if(backup) localStorage.setItem('usuario_century', backup);
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
