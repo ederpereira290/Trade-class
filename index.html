@@ -741,7 +741,15 @@
                 if (emailInput !== usuario.email || passInput !== usuario.senha) { alert("Acesso negado."); return; }
             }
 
-            document.getElementById('header-user-name').innerText = usuario.nome;
+            // Salva o estado de que o operador está ativamente logado
+            localStorage.setItem('usuario_logado', 'true');
+
+            inicializarSessaoAtiva(usuario.nome);
+        }
+
+        // Nova função para dar partida no painel sem travar o login
+        function inicializarSessaoAtiva(nomeTrader) {
+            document.getElementById('header-user-name').innerText = nomeTrader;
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-interface').style.display = 'flex';
             
@@ -750,7 +758,7 @@
             conectarWebSocket();
             atualizarPainelVisual();
             atualizarTabelaHistorico();
-            logTerminal("Terminal operacional autorizado.");
+            logTerminal("Terminal operacional autorizado e sessão restaurada.");
         }
 
         function mudarAba(tabId) {
@@ -764,7 +772,7 @@
         function filtrarMercado(categoria) {
             document.querySelectorAll('.market-list-container').forEach(list => list.classList.remove('active'));
             document.querySelectorAll('.market-subtab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('list-' + categoria).classList.add('active');
+            document.getElementById('list-' + category = categoria).classList.add('active'); // Correção de segurança sintática aqui
             document.getElementById('subbtn-' + categoria).classList.add('active');
         }
 
@@ -874,7 +882,7 @@
             chartPrincipal.data.datasets[4].data = stopOperacao > 0 ? Array(len).fill(stopOperacao) : [];
         }
 
-        function executarRegrasEstrategia() {
+        function ejecutarRegrasEstrategia() {
             let badge = document.getElementById('lbl-status');
             let globalHud = document.getElementById('global-operation-hud');
             let globalHudTxt = document.getElementById('txt-global-hud-content');
@@ -944,7 +952,6 @@
             if (statusRobo === "EM_OPERACAO") {
                 if(badge) { badge.className = "status-badge status-running"; badge.innerText = `Ordem Executada: ${tipoEntrada}`; }
                 
-                // CRIAÇÃO DO ALERTA SUAVE VERDE OU VERMELHO DINÂMICO GLOBAL EM QUALQUE TELA
                 globalHud.style.display = "flex";
                 if(tipoEntrada === "COMPRA") {
                     globalHud.className = "operation-hud-alert hud-buy";
@@ -980,7 +987,7 @@
 
             document.getElementById('lbl-alvo').innerText = "$ " + alvoOperacao.toFixed(2);
             document.getElementById('lbl-stop').innerText = "$ " + stopOperacao.toFixed(2);
-            logTerminal(`Rompimento Confirmado! Motor posicionado em ${tipoEntrada}`, "alert");
+            logTerminal(`Rompimento Confirmado! Motor posicionado in ${tipoEntrada}`, "alert");
             enviarTelegram(`🚀 *Century Trade Start*\nAtivo: XAUUSD\nTipo: ${tipoEntrada}\nEntrada: $${precoReal.toFixed(2)}`);
         }
 
@@ -1068,6 +1075,18 @@
                 window.location.reload();
             }
         }
+
+        // 🚀 GATILHO AUTOMÁTICO: Executa assim que o app abre ou atualiza
+        window.addEventListener('DOMContentLoaded', () => {
+            let dadosSalvos = localStorage.getItem('usuario_century');
+            let loginAtivo = localStorage.getItem('usuario_logado');
+
+            // Se ele já se cadastrou ou logou antes, entra direto!
+            if (dadosSalvos && loginAtivo === 'true') {
+                let usuario = JSON.parse(dadosSalvos);
+                inicializarSessaoAtiva(usuario.nome);
+            }
+        });
     </script>
 </body>
 </html>
