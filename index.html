@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Century Financial - Trader Pro Dashboard</title>
+    <title>Trader Class - Professional Dashboard</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,362 +12,251 @@
     
     <style>
         :root {
+            /* INSTITUTIONAL PREMIUM PALETTE */
             --bg-main: #04060A;
             --bg-card: #0A0F1D;
             --bg-input: #111827;
-            --gold-accent: #FFD700;
-            --gold-glow: rgba(255, 215, 0, 0.2);
+            --gold-accent: #D4AF37; /* Ouro mais clássico e elegante */
+            --gold-glow: rgba(212, 175, 55, 0.2);
             --text-main: #F3F4F6;
             --text-muted: #9CA3AF;
             --gain-color: #10B981;
             --gain-glow: rgba(16, 185, 129, 0.15);
             --loss-color: #EF4444;
             --loss-glow: rgba(239, 68, 68, 0.15);
-            --border-color: rgba(255, 255, 255, 0.06);
+            --border-color: rgba(255, 255, 255, 0.05);
         }
 
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent;
         }
 
+        /* ANIMAÇÃO DE FUNDO FLUIDO (MOVIMENTO CONSTANTE) */
         body {
-            background-color: var(--bg-main);
+            background: linear-gradient(135deg, #020305 0%, #0A0F1D 50%, #020305 100%);
+            background-size: 200% 200%;
+            animation: fluidBackground 15s ease infinite;
             color: var(--text-main);
-            overflow-x: hidden;
-            height: 100vh;
-            width: 100vw;
+            overflow-x: hidden; height: 100vh; width: 100vw;
+        }
+        @keyframes fluidBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .mono {
-            font-family: 'JetBrains Mono', monospace !important;
-        }
+        .mono { font-family: 'JetBrains Mono', monospace !important; }
 
-        /* TELA DE LOGIN / REGISTRO */
+        /* TELA DE LOGIN */
         #login-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #04060A 0%, #010204 100%);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 25px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4, 6, 10, 0.95); backdrop-filter: blur(10px);
+            z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 25px;
         }
 
         .login-logo {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: 3px;
-            color: #FFF;
-            margin-bottom: 35px;
-            text-align: center;
-            line-height: 1.1;
+            font-size: 32px; font-weight: 800; letter-spacing: 2px; color: #FFF; margin-bottom: 35px; text-align: center; line-height: 1.1;
         }
-        .login-logo span { color: var(--gold-accent); text-shadow: 0 0 15px var(--gold-glow); }
+        .login-logo span { color: var(--gold-accent); font-weight: 400; letter-spacing: 6px; display: block; font-size: 14px; margin-top: 5px; }
 
         .login-container {
-            width: 100%;
-            max-width: 350px;
-            background: var(--bg-card);
-            padding: 30px;
-            border-radius: 24px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            width: 100%; max-width: 350px; background: var(--bg-card); padding: 30px; border-radius: 20px;
+            border: 1px solid var(--border-color); box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: translateY(0); transition: 0.3s;
         }
 
-        .login-input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        .login-input-group i {
-            position: absolute;
-            left: 16px; top: 16px;
-            color: var(--text-muted);
-        }
+        .login-input-group { position: relative; margin-bottom: 20px; }
+        .login-input-group i { position: absolute; left: 16px; top: 16px; color: var(--text-muted); }
         .login-input-group input {
-            width: 100%;
-            padding: 15px 15px 15px 48px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            color: #FFF;
-            border-radius: 14px;
-            outline: none;
-            font-size: 14px;
-            transition: all 0.3s;
+            width: 100%; padding: 15px 15px 15px 48px; background: var(--bg-input); border: 1px solid var(--border-color); color: #FFF;
+            border-radius: 12px; outline: none; font-size: 14px; transition: all 0.3s;
         }
-        .login-input-group input:focus {
-            border-color: var(--gold-accent);
-            box-shadow: 0 0 10px var(--gold-glow);
-        }
-
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 25px;
-            font-size: 13px;
-            color: var(--text-muted);
-            cursor: pointer;
-        }
-        .checkbox-container input {
-            accent-color: var(--gold-accent);
-            width: 18px;
-            height: 18px;
-        }
+        .login-input-group input:focus { border-color: var(--gold-accent); box-shadow: 0 0 15px var(--gold-glow); }
 
         .btn-login {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--gold-accent), #C5A000);
-            border: none;
-            border-radius: 14px;
-            color: #000;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+            width: 100%; padding: 16px; background: linear-gradient(135deg, #D4AF37, #AA8A28); border: none; border-radius: 12px;
+            color: #000; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; transition: transform 0.2s, box-shadow 0.2s;
         }
+        .btn-login:active { transform: scale(0.98); }
 
-        .switch-auth-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 13px;
-            color: var(--gold-accent);
-            cursor: pointer;
-        }
+        .switch-auth-link { text-align: center; margin-top: 20px; font-size: 13px; color: var(--gold-accent); cursor: pointer; opacity: 0.8; transition: 0.2s; }
+        .switch-auth-link:hover { opacity: 1; }
 
-        .biometric-box {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-        }
+        .biometric-box { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; }
         .biometric-icon {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            background: rgba(255, 215, 0, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            color: var(--gold-accent);
-            border: 1px solid var(--gold-glow);
-            transition: all 0.3s;
+            width: 60px; height: 60px; border-radius: 50%; background: var(--bg-input); display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: var(--gold-accent); border: 1px solid var(--border-color); transition: all 0.3s;
         }
+        .biometric-box:hover .biometric-icon { box-shadow: 0 0 15px var(--gold-glow); border-color: var(--gold-accent); }
         .biometric-box span { font-size: 12px; color: var(--text-muted); }
 
-        /* INTERFACE DO APLICATIVO FIXED TOP */
-        #app-interface {
-            display: none;
-            height: 100vh;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+        /* INTERFACE DO APLICATIVO */
+        #app-interface { display: none; height: 100vh; flex-direction: column; justify-content: space-between; }
 
-        /* HEADER GLOBAL COM GRÁFICO EMBUTIDO */
+        /* TICKER ANIMADO (MOVIMENTO) */
+        .market-ticker-wrapper {
+            background: var(--gold-accent); color: #000; padding: 4px 0; font-size: 10px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px; overflow: hidden; white-space: nowrap; display: flex; align-items: center;
+        }
+        .market-ticker-content { display: inline-block; animation: scrollTicker 20s linear infinite; }
+        @keyframes scrollTicker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+
         .app-header {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 12px 15px 5px 15px;
-            z-index: 100;
+            background: rgba(10, 15, 29, 0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 12px 15px 5px 15px; z-index: 100;
         }
-        .header-top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .header-logo { font-size: 16px; font-weight: 800; letter-spacing: 1px; }
-        .header-logo span { color: var(--gold-accent); }
-        .header-profile { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-        .header-profile i { color: var(--gold-accent); }
+        .header-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .header-logo { font-size: 16px; font-weight: 800; letter-spacing: 1px; color: #FFF; }
+        .header-logo span { color: var(--gold-accent); font-weight: 400; }
+        .header-profile { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+        .header-profile i { font-size: 18px; color: var(--gold-accent); }
 
-        /* Espaço fixo do gráfico superior unificado */
         .global-chart-wrapper {
-            width: 100%;
-            height: 130px;
-            position: relative;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            padding: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.02);
+            width: 100%; height: 130px; position: relative; background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px; padding: 4px; border: 1px solid var(--border-color); overflow: hidden;
         }
 
-        /* ALERTA SUAVE DE OPERAÇÃO (HUD GLOBAL VISÍVEL EM TODAS AS TELAS) */
+        /* ANIMAÇÃO DE RESPIRAÇÃO PARA ALERTAS */
         .operation-hud-alert {
-            width: 100%;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            text-align: center;
-            margin-top: 6px;
-            display: none; /* Ativado dinamicamente via JS */
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
+            width: 100%; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; margin-top: 6px; display: none;
+            align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px;
         }
-        .hud-buy {
-            background: rgba(16, 185, 129, 0.08);
-            color: var(--gain-color);
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.1);
-        }
-        .hud-sell {
-            background: rgba(239, 68, 68, 0.08);
-            color: var(--loss-color);
-            border: 1px solid rgba(239, 68, 68, 0.25);
-            box-shadow: 0 0 12px rgba(239, 68, 68, 0.1);
-        }
+        .hud-idle { background: rgba(212, 175, 55, 0.05); color: var(--gold-accent); border: 1px solid rgba(212, 175, 55, 0.2); animation: pulseSoft 2s infinite; }
+        .hud-buy { background: var(--gain-glow); color: var(--gain-color); border: 1px solid var(--gain-color); }
+        .hud-sell { background: var(--loss-glow); color: var(--loss-color); border: 1px solid var(--loss-color); }
+        
+        @keyframes pulseSoft { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
 
-        .main-scroll-content {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 95px;
-        }
-
-        .tab-section { display: none; padding: 15px; animation: fadeIn 0.2s ease-in-out; }
+        .main-scroll-content { flex: 1; overflow-y: auto; padding-bottom: 95px; }
+        
+        /* ANIMAÇÃO DESLIZANTE NAS ABAS */
+        .tab-section { display: none; padding: 15px; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .tab-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .premium-card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            background: rgba(10, 15, 29, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.3s;
         }
         .card-title {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 1.5px;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);
+            letter-spacing: 1.5px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
         }
+        .card-title div { display: flex; align-items: center; gap: 8px; }
         .card-title i { color: var(--gold-accent); }
 
         /* HOME ELEMENTS */
-        .balance-hero { text-align: center; padding: 15px 0 10px 0; }
+        .balance-hero { text-align: center; padding: 10px 0 15px 0; }
         .balance-hero p { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
-        .balance-hero h1 { font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-top: 3px; color: #FFF; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+        .balance-hero h1 { font-size: 38px; font-weight: 800; margin-top: 5px; color: #FFF; letter-spacing: -1px; }
+        .points-badge-total {
+            display: inline-block; background: var(--gain-glow); color: var(--gain-color); padding: 6px 14px;
+            border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 5px; border: 1px solid rgba(16, 185, 129, 0.3);
+        }
 
         .asset-quick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
         .quick-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 14px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px 10px;
+            text-align: center; cursor: pointer; transition: 0.3s;
         }
-        .quick-box:hover { border-color: var(--gold-accent); background: rgba(255,215,0,0.02); }
+        .quick-box:hover { transform: translateY(-3px); border-color: var(--gold-accent); background: rgba(212,175,55,0.05); }
         .quick-box i { font-size: 18px; color: var(--gold-accent); margin-bottom: 6px; }
-        .quick-box span { display: block; font-size: 11px; font-weight: 700; }
+        .quick-box span { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); }
 
         /* LISTA DE MERCADOS AVANÇADA */
-        .market-subtabs { display: flex; background: var(--bg-input); border-radius: 14px; padding: 4px; margin-bottom: 15px; border: 1px solid var(--border-color); }
-        .market-subtab-btn { flex: 1; padding: 12px; text-align: center; font-size: 11px; font-weight: 700; text-transform: uppercase; border-radius: 10px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
-        .market-subtab-btn.active { background: var(--bg-card); color: var(--gold-accent); border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .market-subtabs { display: flex; background: var(--bg-input); border-radius: 12px; padding: 4px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .market-subtab-btn { flex: 1; padding: 12px; text-align: center; font-size: 10px; font-weight: 700; text-transform: uppercase; border-radius: 8px; cursor: pointer; color: var(--text-muted); transition: 0.3s; }
+        .market-subtab-btn.active { background: var(--bg-card); color: var(--gold-accent); border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         
         .market-list-container { display: none; }
         .market-list-container.active { display: block; }
 
-        /* ATIVO VISUAL PREMIUM STYLE */
+        /* ANIMAÇÃO PISCANTE PARA SINAL DE "LIVE" */
+        @keyframes pulseDot { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+        .live-dot { display: inline-block; width: 6px; height: 6px; background: var(--gain-color); border-radius: 50%; margin-right: 4px; animation: pulseDot 1.5s infinite; }
+
         .asset-row-premium {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; transition: 0.2s;
         }
-        .asset-row-premium:hover { border-color: rgba(255, 255, 255, 0.15); }
+        .asset-row-premium:hover { border-color: rgba(255,255,255,0.1); transform: translateX(3px); }
         .asset-main-info { display: flex; align-items: center; gap: 12px; }
         .asset-icon-badge {
             width: 38px; height: 38px; background: var(--bg-input); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; border: 1px solid var(--border-color);
         }
         .asset-meta h4 { font-size: 14px; font-weight: 700; color: #FFF; }
-        .asset-meta p { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+        .asset-meta p { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; margin-top: 2px;}
         
         .asset-metrics-live { text-align: right; }
         .asset-live-price { font-size: 15px; font-weight: 700; color: #FFF; }
         .asset-live-badge-box { display: inline-flex; align-items: center; gap: 4px; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-top: 4px; }
-        .badge-up { background: rgba(16, 185, 129, 0.1); color: var(--gain-color); border: 1px solid rgba(16, 185, 129, 0.2); }
-        .badge-down { background: rgba(239, 68, 68, 0.1); color: var(--loss-color); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .badge-up { background: var(--gain-glow); color: var(--gain-color); }
+        .badge-down { background: var(--loss-glow); color: var(--loss-color); }
 
-        /* STATUS BADGES TRADING STYLE */
-        .status-badge {
-            width: 100%; padding: 14px; border-radius: 14px; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px;
-        }
-        .status-idle { background: rgba(156,163,175,0.08); color: var(--text-muted); border: 1px solid rgba(156,163,175,0.2); }
-        .status-capturing { background: rgba(255,215,0,0.08); color: var(--gold-accent); border: 1px solid rgba(255,215,0,0.3); box-shadow: 0 0 10px var(--gold-glow); }
-        .status-waiting { background: rgba(59, 130, 246, 0.08); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .status-running { background: rgba(16,185,129,0.08); color: var(--gain-color); border: 1px solid rgba(16,185,129,0.3); box-shadow: 0 0 10px var(--gain-glow); }
-        .status-locked { background: rgba(239,68,68,0.08); color: var(--loss-color); border: 1px solid rgba(239,68,68,0.3); }
+        /* STATUS BADGES */
+        .status-badge { width: 100%; padding: 14px; border-radius: 12px; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 15px; }
+        .status-idle { background: rgba(156,163,175,0.05); color: var(--text-muted); border: 1px solid rgba(156,163,175,0.2); }
+        .status-capturing { background: var(--gold-glow); color: var(--gold-accent); border: 1px solid rgba(212,175,55,0.3); animation: pulseSoft 2s infinite; }
+        .status-waiting { background: rgba(59, 130, 246, 0.08); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .status-running { background: var(--gain-glow); color: var(--gain-color); border: 1px solid rgba(16,185,129,0.3); }
+        .status-locked { background: var(--loss-glow); color: var(--loss-color); border: 1px solid rgba(239,68,68,0.3); }
 
         /* GRID LAYOUTS */
         .flex-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .data-box { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 14px; border-radius: 14px; text-align: center; }
+        .data-box { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 14px; border-radius: 12px; text-align: center; }
         .data-box label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 5px; font-weight: 700; }
-        .data-box span { font-size: 15px; font-weight: 700; }
+        .data-box span { font-size: 15px; font-weight: 700; color: #FFF; }
 
-        /* FORMULARIOS INTERFACE */
+        /* FORMULARIOS */
         label.input-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 8px; }
-        select, input.app-input { width: 100%; padding: 15px; background: var(--bg-input); border: 1px solid var(--border-color); color: #FFF; border-radius: 14px; font-size: 14px; outline: none; margin-bottom: 15px; }
+        select, input.app-input {
+            width: 100%; padding: 15px; background: var(--bg-input); border: 1px solid var(--border-color); color: #FFF;
+            border-radius: 10px; font-size: 14px; outline: none; margin-bottom: 15px; transition: 0.3s;
+        }
         select:focus, input.app-input:focus { border-color: var(--gold-accent); }
 
-        .btn-action { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--gold-accent), #C5A000); border: none; color: #000; font-weight: 800; border-radius: 14px; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 1.5px; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.15); }
-        .btn-reset { background: transparent; border: 1px solid var(--loss-color); color: var(--loss-color); margin-top: 10px; box-shadow: none; }
-
-        /* INDICADORES TECNICOS */
-        .tech-indicator-container {
-            display: flex; justify-content: space-between; align-items: center; margin-top: 12px; background: var(--bg-input); padding: 10px 14px; border-radius: 10px; font-size: 11px;
+        .btn-action {
+            width: 100%; padding: 16px; background: linear-gradient(135deg, #D4AF37, #AA8A28); border: none; color: #000;
+            font-weight: 800; border-radius: 10px; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 1.5px; transition: 0.2s;
         }
-        .indicator-bar-bg { width: 70px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; position: relative; overflow: hidden; }
-        .indicator-bar-fill { height: 100%; background: var(--gold-accent); width: 50%; transition: width 0.3s; }
+        .btn-action:active { transform: scale(0.98); }
+        .btn-reset { background: transparent; border: 1px solid var(--loss-color); color: var(--loss-color); margin-top: 10px; }
+        .btn-mini-add { padding: 6px 12px; background: rgba(212,175,55,0.1); border: 1px solid var(--gold-accent); color: var(--gold-accent); border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-mini-add:hover { background: var(--gold-accent); color: #000; }
 
-        /* TABELA HISTÓRICO */
+        /* FILTRO DE PERÍODO */
+        .report-filter-row { display: flex; gap: 8px; margin-bottom: 15px; }
+        .btn-filter-period { flex: 1; padding: 10px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-filter-period.active { background: rgba(212,175,55,0.1); color: var(--gold-accent); border-color: var(--gold-accent); }
+
+        /* TABELAS E WIDGETS */
         .trade-history-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .trade-history-table th { text-align: left; font-size: 10px; text-transform: uppercase; color: var(--text-muted); padding: 8px 4px; border-bottom: 1px solid var(--border-color); }
-        .trade-history-table td { padding: 12px 4px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.01); }
+        .trade-history-table td { padding: 12px 4px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.02); }
         
         .badge-result { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .badge-gain { background: var(--gain-glow); color: var(--gain-color); border: 1px solid rgba(16,185,129,0.2); }
-        .badge-loss { background: var(--loss-glow); color: var(--loss-color); border: 1px solid rgba(239,68,68,0.2); }
+        .badge-gain { background: var(--gain-glow); color: var(--gain-color); }
+        .badge-loss { background: var(--loss-glow); color: var(--loss-color); }
+        .btn-remove-time { background: transparent; border: none; color: var(--loss-color); cursor: pointer; font-size: 14px; opacity: 0.7; transition: 0.2s;}
+        .btn-remove-time:hover { opacity: 1; }
 
-        .log-container { max-height: 120px; overflow-y: auto; font-size: 11px; font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .log-row { margin-bottom: 4px; color: var(--text-muted); }
+        .tv-widget-box { width: 100%; height: 400px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); background: rgba(0,0,0,0.5); }
+
+        /* TERMINAL LOG */
+        .log-container { max-height: 150px; overflow-y: auto; font-size: 10px; font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .log-row { margin-bottom: 6px; color: var(--text-muted); }
         .log-row.success { color: var(--gain-color); }
         .log-row.alert { color: var(--gold-accent); }
 
         /* BOTTOM NAVIGATION BAR */
         .bottom-nav-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: rgba(10, 15, 29, 0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; z-index: 999; padding-bottom: env(safe-area-inset-bottom);
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: rgba(10, 15, 29, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; z-index: 999; padding-bottom: env(safe-area-inset-bottom);
         }
-        .nav-tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; width: 25%; height: 100%; }
-        .nav-tab-item i { font-size: 20px; margin-bottom: 4px; }
-        .nav-tab-item span { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nav-tab-item.active { color: var(--gold-accent); text-shadow: 0 0 10px var(--gold-glow); }
+        .nav-tab-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; width: 25%; height: 100%; transition: 0.3s; }
+        .nav-tab-item i { font-size: 20px; margin-bottom: 4px; transition: 0.3s; }
+        .nav-tab-item span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+        .nav-tab-item.active { color: var(--gold-accent); }
+        .nav-tab-item.active i { transform: translateY(-3px); }
 
         .chart-box { position: relative; width: 100%; height: 160px; }
     </style>
@@ -375,15 +264,15 @@
 <body>
 
     <div id="login-screen">
-        <div class="login-logo">CENTURY<br><span>FINANCIAL</span></div>
+        <div class="login-logo">TRADER CLASS<br><span>INSTITUTIONAL TERMINAL</span></div>
         <div class="login-container" id="login-form-box">
             <div class="login-input-group">
-                <i class="fa-solid fa-envelope"></i>
-                <input type="text" id="login-user" placeholder="E-mail do Operador">
+                <i class="fa-solid fa-user-tie"></i>
+                <input type="text" id="login-user" placeholder="E-mail Corporativo">
             </div>
             <div class="login-input-group">
                 <i class="fa-solid fa-lock"></i>
-                <input type="password" id="login-pass" placeholder="Senha Corporativa">
+                <input type="password" id="login-pass" placeholder="Senha de Acesso">
             </div>
             <button class="btn-login" onclick="autenticarApp(false)">Acessar Terminal</button>
             <div class="switch-auth-link" onclick="alternarTelasAutenticacao(true)">Solicitar Novo Registro</div>
@@ -396,32 +285,38 @@
         <div class="login-container" id="register-form-box" style="display: none;">
             <div class="login-input-group">
                 <i class="fa-solid fa-user"></i>
-                <input type="text" id="reg-user" placeholder="Nome do Trader">
+                <input type="text" id="reg-user" placeholder="Nome do Operador">
             </div>
             <div class="login-input-group">
                 <i class="fa-solid fa-envelope"></i>
-                <input type="email" id="reg-email" placeholder="E-mail Institucional">
+                <input type="email" id="reg-email" placeholder="E-mail Profissional">
             </div>
             <div class="login-input-group">
                 <i class="fa-solid fa-lock"></i>
-                <input type="password" id="reg-pass" placeholder="Criar Senha de Acesso">
+                <input type="password" id="reg-pass" placeholder="Criar Senha">
             </div>
             <label class="checkbox-container">
                 <input type="checkbox" id="reg-bio" checked>
-                Vincular Biometria Deste Aparelho
+                Vincular Biometria deste Aparelho
             </label>
             <button class="btn-login" onclick="registrarUsuario()">Gravar Credenciais</button>
-            <div class="switch-auth-link" onclick="alternarTelasAutenticacao(false)">Retornar ao Login</div>
+            <div class="switch-auth-link" onclick="alternarTelasAutenticacao(false)">Voltar ao Login</div>
         </div>
     </div>
 
     <div id="app-interface">
         
+        <div class="market-ticker-wrapper">
+            <div class="market-ticker-content">
+                TRADER CLASS INSTITUTIONAL • XAUUSD LIVE MAPPING ACTIVE • STRICT RISK MANAGEMENT ENFORCED • MONITORING FED STATEMENTS • TRADER CLASS INSTITUTIONAL • XAUUSD LIVE MAPPING ACTIVE • STRICT RISK MANAGEMENT ENFORCED • MONITORING FED STATEMENTS
+            </div>
+        </div>
+
         <div class="app-header">
             <div class="header-top-row">
-                <div class="header-logo">CENTURY <span>PRO MASTER</span></div>
+                <div class="header-logo">TRADER <span>CLASS</span></div>
                 <div class="header-profile">
-                    <span id="header-user-name" class="mono">Trader</span>
+                    <span id="header-user-name" class="mono">Operador</span>
                     <i class="fa-solid fa-circle-user"></i>
                 </div>
             </div>
@@ -430,9 +325,9 @@
                 <canvas id="chartPrincipal"></canvas>
             </div>
 
-            <div id="global-operation-hud" class="operation-hud-alert">
-                <i class="fa-solid fa-circle-nodes fa-spin"></i>
-                <span id="txt-global-hud-content">AGUARDANDO SINAL...</span>
+            <div id="global-operation-hud" class="operation-hud-alert hud-idle">
+                <i class="fa-solid fa-chart-line"></i>
+                <span id="txt-global-hud-content">AGUARDANDO CONFIGURAÇÃO...</span>
             </div>
         </div>
 
@@ -440,45 +335,31 @@
             
             <div id="tab-home" class="tab-section active">
                 <div class="balance-hero">
-                    <p>Net Liquidity (Equity)</p>
+                    <p>Liquidez do Portfólio</p>
                     <h1 id="txt-banca-hero" class="mono">$ 1,000.00</h1>
-                </div>
-
-                <div class="asset-quick-grid">
-                    <div class="quick-box" onclick="mudarAba('tab-market'); filtrarMercado('moedas')">
-                        <i class="fa-solid fa-dollar-sign"></i>
-                        <span>Forex</span>
-                    </div>
-                    <div class="quick-box" onclick="mudarAba('tab-market'); filtrarMercado('commodities')">
-                        <i class="fa-solid fa-gem"></i>
-                        <span>XAU Spot</span>
-                    </div>
-                    <div class="quick-box" onclick="mudarAba('tab-market'); filtrarMercado('indices')">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
-                        <span>Indices</span>
-                    </div>
+                    <div id="points-global-counter" class="points-badge-total mono">0 PONTOS XAUUSD</div>
                 </div>
 
                 <div class="premium-card">
-                    <div class="card-title"><i class="fa-solid fa-chart-area"></i>Evolução Patrimonial Consolidada</div>
+                    <div class="card-title"><div><i class="fa-solid fa-chart-area"></i>Curva de Patrimônio</div></div>
                     <div class="chart-box">
                         <canvas id="chartPatrimonio"></canvas>
                     </div>
                 </div>
 
                 <div class="premium-card">
-                    <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i>Últimos Trades Encerrados</div>
+                    <div class="card-title"><div><i class="fa-solid fa-clock-rotate-left"></i>Últimas Operações</div></div>
                     <table class="trade-history-table">
                         <thead>
                             <tr>
                                 <th>Horário</th>
                                 <th>Ativo</th>
                                 <th>Tipo</th>
-                                <th>Resultado ($)</th>
+                                <th>Delta (Pts)</th>
                             </tr>
                         </thead>
                         <tbody id="history-rows-home">
-                            <tr><td colspan="4" style="color:var(--text-muted); text-align:center;">Aguardando primeiro fechamento...</td></tr>
+                            <tr><td colspan="4" style="color:var(--text-muted); text-align:center;">Aguardando primeiro trade...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -486,226 +367,205 @@
 
             <div id="tab-market" class="tab-section">
                 <div class="market-subtabs">
-                    <div class="market-subtab-btn active" id="subbtn-moedas" onclick="filtrarMercado('moedas')">Moedas</div>
-                    <div class="market-subtab-btn" id="subbtn-indices" onclick="filtrarMercado('indices')">Índices</div>
-                    <div class="market-subtab-btn" id="subbtn-commodities" onclick="filtrarMercado('commodities')">Cripto & Metais</div>
+                    <div class="market-subtab-btn active" id="subbtn-news" onclick="filtrarMercado('news')">XAUUSD Notícias</div>
+                    <div class="market-subtab-btn" id="subbtn-calendar" onclick="filtrarMercado('calendar')">Calendário USD</div>
                 </div>
 
-                <div id="list-moedas" class="market-list-container active">
-                    <div class="asset-row-premium">
-                        <div class="asset-main-info">
-                            <div class="asset-icon-badge" style="color: #60A5FA;">EU</div>
-                            <div class="asset-meta"><h4>EUR/USD</h4><p>Euro / US Dollar • Live</p></div>
-                        </div>
-                        <div class="asset-metrics-live">
-                            <div class="asset-live-price mono" id="price-eurusd">1.0852</div>
-                            <div class="asset-live-badge-box badge-up mono" id="chg-eurusd">+0.12%</div>
-                        </div>
-                    </div>
-                    <div class="asset-row-premium">
-                        <div class="asset-main-info">
-                            <div class="asset-icon-badge" style="color: #F472B6;">GB</div>
-                            <div class="asset-meta"><h4>GBP/USD</h4><p>Pound / US Dollar • Live</p></div>
-                        </div>
-                        <div class="asset-metrics-live">
-                            <div class="asset-live-price mono" id="price-gbpusd">1.2645</div>
-                            <div class="asset-live-badge-box badge-down mono" id="chg-gbpusd">-0.08%</div>
-                        </div>
-                    </div>
-                    <div class="asset-row-premium">
-                        <div class="asset-main-info">
-                            <div class="asset-icon-badge" style="color: #34D399;">JP</div>
-                            <div class="asset-meta"><h4>USD/JPY</h4><p>US Dollar / Yen • Live</p></div>
-                        </div>
-                        <div class="asset-metrics-live">
-                            <div class="asset-live-price mono" id="price-usdjpy">150.32</div>
-                            <div class="asset-live-badge-box badge-up mono" id="chg-usdjpy">+0.24%</div>
+                <div id="list-news" class="market-list-container active">
+                    <div class="premium-card">
+                        <div class="card-title"><div><i class="fa-regular fa-newspaper"></i>Feed Institucional (Ouro)</div><span class="live-dot"></span></div>
+                        <div class="tv-widget-box">
+                            <div class="tradingview-widget-container">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+                                {
+                                  "feedMode": "symbol",
+                                  "symbol": "OANDA:XAUUSD",
+                                  "colorTheme": "dark",
+                                  "isTransparent": true,
+                                  "displayMode": "regular",
+                                  "width": "100%",
+                                  "height": "100%",
+                                  "locale": "br"
+                                }
+                                </script>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="list-indices" class="market-list-container">
-                    <div class="asset-row-premium">
-                        <div class="asset-main-info">
-                            <div class="asset-icon-badge" style="color: #F87171;">SP</div>
-                            <div class="asset-meta"><h4>US500</h4><p>S&P 500 Index Derivatives</p></div>
-                        </div>
-                        <div class="asset-metrics-live">
-                            <div class="asset-live-price mono" id="price-us500">5183.15</div>
-                            <div class="asset-live-badge-box badge-up mono" id="chg-us500">+0.42%</div>
-                        </div>
-                    </div>
-                    <div class="asset-row-premium">
-                        <div class="asset-main-info">
-                            <div class="asset-icon-badge" style="color: #38BDF8;">NQ</div>
-                            <div class="asset-meta"><h4>NAS100</h4><p>Nasdaq 100 Heavy Tech</p></div>
-                        </div>
-                        <div class="asset-metrics-live">
-                            <div class="asset-live-price mono" id="price-nas100">18240.60</div>
-                            <div class="asset-live-badge-box badge-up mono" id="chg-nas100">+0.78%</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="list-commodities" class="market-list-container">
-                    <div class="asset-row-premium" style="border-color: var(--gold-accent); background: rgba(255,215,0,0.02);">
-                        <div class="asset-main-info">
-                            <div class="asset-icon-badge" style="color: var(--gold-accent); background: rgba(255,215,0,0.05);">AU</div>
-                            <div class="asset-meta"><h4>XAU/USD (ALVO)</h4><p style="color: var(--gold-accent);">Ouro Spot • Feed Global</p></div>
-                        </div>
-                        <div class="asset-metrics-live">
-                            <div class="asset-live-price mono" id="price-xauusd" style="color: var(--gold-accent); font-weight: 800;">$ 0.00</div>
-                            <div class="asset-live-badge-box badge-up mono" style="background: rgba(255,215,0,0.1); color: var(--gold-accent); border-color: rgba(255,215,0,0.3)">WEB-STREAM</div>
-                        </div>
-                    </div>
-                    <div class="asset-row-premium">
-                        <div class="asset-main-info">
-                            <div class="asset-icon-badge" style="color: #F59E0B;">⚡</div>
-                            <div class="asset-meta"><h4>BTC/USD</h4><p>Bitcoin Spot Crypto</p></div>
-                        </div>
-                        <div class="asset-metrics-live">
-                            <div class="asset-live-price mono" id="price-btcusd">67420.50</div>
-                            <div class="asset-live-badge-box badge-up mono" id="chg-btcusd">+2.41%</div>
+                <div id="list-calendar" class="market-list-container">
+                    <div class="premium-card">
+                        <div class="card-title"><div><i class="fa-solid fa-calendar-exclamation"></i>Eventos de Alto Impacto (USD)</div><span class="live-dot"></span></div>
+                        <p style="font-size: 10px; color: var(--text-muted); margin-bottom: 10px;">Monitorizando anúncios do FED e indicadores de inflação/emprego.</p>
+                        <div class="tv-widget-box">
+                            <div class="tradingview-widget-container">
+                                <div class="tradingview-widget-container__widget"></div>
+                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+                                {
+                                  "colorTheme": "dark",
+                                  "isTransparent": true,
+                                  "width": "100%",
+                                  "height": "100%",
+                                  "locale": "br",
+                                  "importanceFilter": "0,1",
+                                  "currencyFilter": "USD"
+                                }
+                                </script>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div id="tab-trades" class="tab-section">
-                <div id="lbl-status" class="status-badge status-idle">Barramento Pronto</div>
-
+                
                 <div class="premium-card">
-                    <div class="card-title"><i class="fa-solid fa-chart-line"></i>Métricas do Canal Real-time</div>
-                    <div class="tech-indicator-container">
-                        <div>RSI (14): <span id="lbl-rsi-val" class="mono" style="color: var(--gold-accent)">50.2</span></div>
-                        <div class="indicator-bar-bg"><div id="bar-rsi" class="indicator-bar-fill"></div></div>
-                        <div>VOL: <span id="lbl-vol-val" class="mono">K4.2</span></div>
-                    </div>
-
-                    <div class="flex-grid-2" style="margin-top: 15px;">
-                        <div class="data-box"><label>Máxima Canal</label><span id="lbl-max" class="mono">-</span></div>
-                        <div class="data-box"><label>Mínima Canal</label><span id="lbl-min" class="mono">-</span></div>
-                    </div>
-                </div>
-
-                <div class="premium-card">
-                    <div class="card-title"><i class="fa-solid fa-bullseye"></i>Ordens & Matriz de Risco</div>
+                    <div class="card-title"><div><i class="fa-solid fa-laptop-code"></i>Métricas de Sensoriamento</div><span class="live-dot"></span></div>
                     <div class="flex-grid-2">
-                        <div class="data-box" style="border-color: rgba(16,185,129,0.2);"><label style="color:var(--gain-color)">Alvo Projetado</label><span id="lbl-alvo" class="mono" style="color:var(--gain-color)">-</span></div>
-                        <div class="data-box" style="border-color: rgba(239,68,68,0.2);"><label style="color:var(--loss-color)">Stop Técnico</label><span id="lbl-stop" class="mono" style="color:var(--loss-color)">-</span></div>
+                        <div class="data-box"><label>Teto (Máxima)</label><span id="lbl-max" class="mono">-</span></div>
+                        <div class="data-box"><label>Piso (Mínima)</label><span id="lbl-min" class="mono">-</span></div>
                     </div>
-                    <div class="data-box"><label>Tamanho do Lote Automatizado</label><span id="lbl-lote" class="mono" style="color:var(--gold-accent); font-weight:700;">LOTE: 0.00</span></div>
+                    <div class="data-box"><label style="color:var(--gold-accent)">Contagem Regressiva de Vela</label><span id="lbl-vela-timer" class="mono" style="color:var(--gold-accent); font-size: 18px;">--:--</span></div>
                 </div>
 
                 <div class="premium-card">
-                    <div class="card-title"><i class="fa-solid fa-code"></i>Console de Execução</div>
+                    <div class="card-title"><div><i class="fa-solid fa-bullseye"></i>Matriz de Execução</div></div>
+                    <div class="flex-grid-2">
+                        <div class="data-box" style="border-color: rgba(16,185,129,0.3);"><label style="color:var(--gain-color)">Alvo (Take Profit)</label><span id="lbl-alvo" class="mono" style="color:var(--gain-color)">-</span></div>
+                        <div class="data-box" style="border-color: rgba(239,68,68,0.3);"><label style="color:var(--loss-color)">Prevenção (Stop Loss)</label><span id="lbl-stop" class="mono" style="color:var(--loss-color)">-</span></div>
+                    </div>
+                </div>
+
+                <div class="premium-card">
+                    <div class="card-title"><div><i class="fa-solid fa-terminal"></i>Log do Sistema</div></div>
                     <div class="log-container" id="terminal-log">
-                        <div class="log-row">[SYSTEM] Terminal Century Pro inicializado.</div>
+                        <div class="log-row">[SYS] Trader Class Terminal Inicializado.</div>
                     </div>
                 </div>
             </div>
 
             <div id="tab-risk" class="tab-section">
                 
-                <div class="premium-card" style="border-color: var(--gold-accent); background: rgba(255,215,0,0.01);">
-                    <div class="card-title"><i class="fa-solid fa-power-off"></i>Controle de Ignição & Sincronismo</div>
+                <div class="premium-card" style="border-color: var(--gold-accent); background: rgba(212,175,55,0.02);">
+                    <div class="card-title">
+                        <div><i class="fa-regular fa-clock"></i>Agenda Operacional Autônoma</div>
+                        <button class="btn-mini-add" onclick="adicionarHorarioLista()">+ Adicionar</button>
+                    </div>
                     
-                    <div class="flex-grid-2">
+                    <div class="flex-grid-2" style="margin-bottom: 5px;">
                         <div>
-                            <label class="input-label">Início da Captura</label>
-                            <input type="time" id="cfg-hora-ini" class="app-input mono" value="10:05" onchange="salvarConfiguracoes()">
+                            <label class="input-label">Início</label>
+                            <input type="time" id="cfg-hora-ini" class="app-input mono" value="10:05" onchange="salvarHorarioAtualTemporario()">
                         </div>
                         <div>
-                            <label class="input-label">Fim da Captura</label>
-                            <input type="time" id="cfg-hora-fim" class="app-input mono" value="10:25" onchange="salvarConfiguracoes()">
+                            <label class="input-label">Fim</label>
+                            <input type="time" id="cfg-hora-fim" class="app-input mono" value="10:25" onchange="salvarHorarioAtualTemporario()">
                         </div>
                     </div>
 
-                    <label class="input-label">Tempo de Confirmação Gráfica</label>
-                    <select id="cfg-tempo" onchange="salvarConfiguracoes()">
+                    <table class="trade-history-table" style="margin-bottom: 15px;">
+                        <thead>
+                            <tr>
+                                <th>Início Canal</th>
+                                <th>Fim Canal</th>
+                                <th style="text-align: right;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-horarios-rows">
+                            </tbody>
+                    </table>
+
+                    <label class="input-label">Confirmação Gráfica (Timeframe)</label>
+                    <select id="cfg-tempo" onchange="salvarConfiguracoesGlobal()">
                         <option value="1" selected>M1 (Vela de 1 Minuto)</option>
                         <option value="5">M5 (Vela de 5 Minutos)</option>
                         <option value="15">M15 (Vela de 15 Minutos)</option>
                     </select>
 
-                    <button class="btn-action" style="margin-top: 5px;" onclick="armarProximoCiclo()"><i class="fa-solid fa-play"></i> Inicializar Motor Operacional</button>
+                    <button class="btn-action" style="margin-top: 5px;" onclick="ativarMotorAutonomo()"><i class="fa-solid fa-play"></i> Ligar Motor Operacional Automático</button>
                 </div>
 
                 <div class="premium-card">
-                    <div class="card-title"><i class="fa-solid fa-shield-halved"></i>Calibração de Banca & Drawdown</div>
-                    <label class="input-label">Perfil de Perda Diária Permitida</label>
-                    <select id="cfg-perfil" onchange="salvarConfiguracoes()">
-                        <option value="0.01" selected>1% Diário (Conservador)</option>
-                        <option value="0.02">2% Diário (Moderado)</option>
-                        <option value="0.03">3% Diário (Agressivo)</option>
-                    </select>
-
-                    <label class="input-label">Banca Operacional Atual ($)</label>
-                    <input type="number" id="cfg-banca" class="app-input mono" value="1000" onchange="salvarConfiguracoes()">
-
-                    <label class="input-label">Risco Financeiro Fixo por Operação ($)</label>
-                    <input type="number" id="cfg-risco" class="app-input mono" value="20" onchange="salvarConfiguracoes()">
-                    
-                    <label class="input-label">Ajuste Fino de Preço (Offset)</label>
-                    <input type="number" id="cfg-offset" class="app-input mono" step="0.05" value="0.00" onchange="salvarConfiguracoes()">
+                    <div class="card-title"><div><i class="fa-solid fa-chart-simple"></i>Relatório de Desempenho</div></div>
+                    <div class="report-filter-row">
+                        <button class="btn-filter-period active" id="flt-hoje" onclick="filtrarRelatorio('hoje')">Hoje</button>
+                        <button class="btn-filter-period" id="flt-7d" onclick="filtrarRelatorio('7d')">7 Dias</button>
+                        <button class="btn-filter-period" id="flt-30d" onclick="filtrarRelatorio('30d')">30 Dias</button>
+                        <button class="btn-filter-period" id="flt-todos" onclick="filtrarRelatorio('todos')">Total</button>
+                    </div>
+                    <div class="flex-grid-2">
+                        <div class="data-box" style="background: rgba(16,185,129,0.02);"><label>Pontuação Período</label><span id="lbl-rep-pontos" class="mono" style="color: var(--gain-color)">0 pts</span></div>
+                        <div class="data-box"><label>Total de Operações</label><span id="lbl-rep-qtd" class="mono">0</span></div>
+                    </div>
                 </div>
 
-                <button class="btn-action btn-reset" onclick="reiniciarDeFabrica()"><i class="fa-solid fa-trash-can"></i> Limpar Dados (Preservar Operador)</button>
+                <div class="premium-card">
+                    <div class="card-title"><div><i class="fa-solid fa-shield-halved"></i>Gestão de Risco</div></div>
+                    <label class="input-label">Banca Operacional Atual ($)</label>
+                    <input type="number" id="cfg-banca" class="app-input mono" value="1000" onchange="salvarConfiguracoesGlobal()">
+
+                    <label class="input-label">Risco Financeiro Fixo por Operação ($)</label>
+                    <input type="number" id="cfg-risco" class="app-input mono" value="20" onchange="salvarConfiguracoesGlobal()">
+                    
+                    <label class="input-label">Ajuste de Cotação (Offset)</label>
+                    <input type="number" id="cfg-offset" class="app-input mono" step="0.05" value="0.00" onchange="salvarConfiguracoesGlobal()">
+                </div>
+
+                <button class="btn-action btn-reset" onclick="reiniciarDeFabrica()"><i class="fa-solid fa-rotate-left"></i> Redefinir Sistema</button>
             </div>
 
         </div>
 
         <div class="bottom-nav-bar">
             <div class="nav-tab-item active" id="nav-home" onclick="mudarAba('tab-home')">
-                <i class="fa-solid fa-grip"></i><span>Home</span>
+                <i class="fa-solid fa-house"></i><span>Home</span>
             </div>
             <div class="nav-tab-item" id="nav-market" onclick="mudarAba('tab-market')">
-                <i class="fa-solid fa-chart-simple"></i><span>Market</span>
+                <i class="fa-solid fa-globe"></i><span>Market</span>
             </div>
             <div class="nav-tab-item" id="nav-trades" onclick="mudarAba('tab-trades')">
-                <i class="fa-solid fa-bolt"></i><span>Trades</span>
+                <i class="fa-solid fa-bolt"></i><span>Terminal</span>
             </div>
             <div class="nav-tab-item" id="nav-risk" onclick="mudarAba('tab-risk')">
-                <i class="fa-solid fa-shield-blank"></i><span>Risco</span>
+                <i class="fa-solid fa-sliders"></i><span>Config</span>
             </div>
         </div>
 
     </div>
 
     <script>
+        // Configurações do Telegram
         const TELEGRAM_TOKEN = "8769312904:AAEOyCHSl9KrJWPSILVEawP33aFE1jtZtPc";
         const CHAT_ID = "7005917787";
 
-        let precoReal = 0;
-        let historicoPrecos = [];
-        let chartPrincipal;
-        let chartPatrimonio;
-        let ws;
+        let precoReal = 0; let historicoPrecos = []; let chartPrincipal; let chartPatrimonio; let ws;
         const noSleep = new NoSleep();
 
+        // Variáveis de Estado
         let banca = parseFloat(localStorage.getItem('banca')) || 1000.00;
         let riscoFixo = parseFloat(localStorage.getItem('risco')) || 20.00;
         let offsetPreco = parseFloat(localStorage.getItem('offset')) || 0.00;
         let operacoes = JSON.parse(localStorage.getItem('operacoes')) || [];
         let historicoBanca = JSON.parse(localStorage.getItem('historicoBanca')) || [1000.00];
         let statusRobo = localStorage.getItem('statusRobo') || "DESLIGADO";
+        let tempoVela = parseInt(localStorage.getItem('tempoVela')) || 1;
+
+        let agendaHorarios = JSON.parse(localStorage.getItem('agendaHorarios')) || [{ inicio: "10:05", fim: "10:25" }];
+        let ultimoInputInicio = localStorage.getItem('ultimoInputInicio') || "10:05";
+        let ultimoInputFim = localStorage.getItem('ultimoInputFim') || "10:25";
 
         let maxCanal = parseFloat(localStorage.getItem('maxCanal')) || -Infinity;
         let minCanal = parseFloat(localStorage.getItem('minCanal')) || Infinity;
         let alvoOperacao = parseFloat(localStorage.getItem('alvoOperacao')) || 0;
         let stopOperacao = parseFloat(localStorage.getItem('stopOperacao')) || 0;
         let tipoEntrada = localStorage.getItem('tipoEntrada') || "";
+        let precoEntrada = parseFloat(localStorage.getItem('precoEntrada')) || 0;
 
-        let basePrices = { eurusd: 1.0852, gbpusd: 1.2645, usdjpy: 150.32, audusd: 0.6521, usdcad: 1.3548, us500: 5183.15, us30: 39120.40, nas100: 18240.60, ger40: 17910.20, usoil: 82.45, btcusd: 67420.50, ethusd: 3485.10 };
-
+        // Funções de Autenticação
         function alternarTelasAutenticacao(mostrarCadastro) {
-            if (mostrarCadastro) {
-                document.getElementById('login-form-box').style.display = 'none';
-                document.getElementById('register-form-box').style.display = 'block';
-            } else {
-                document.getElementById('login-form-box').style.display = 'block';
-                document.getElementById('register-form-box').style.display = 'none';
-            }
+            document.getElementById('login-form-box').style.display = mostrarCadastro ? 'none' : 'block';
+            document.getElementById('register-form-box').style.display = mostrarCadastro ? 'block' : 'none';
         }
 
         function registrarUsuario() {
@@ -714,31 +574,21 @@
             let pass = document.getElementById('reg-pass').value.trim();
             let bioAtiva = document.getElementById('reg-bio').checked;
 
-            if (!nome || !email || !pass) {
-                alert("Preencha todos os campos regulamentares.");
-                return;
-            }
-
-            let dadosUsuario = { nome: nome, email: email, senha: pass, biometria: bioAtiva };
-            localStorage.setItem('usuario_century', JSON.stringify(dadosUsuario));
-            document.getElementById('header-user-name').innerText = nome;
-            alert("Cadastro gravado!");
+            if (!nome || !email || !pass) { alert("Por favor, preencha todos os campos."); return; }
+            localStorage.setItem('usuario_century', JSON.stringify({ nome: nome, email: email, senha: pass, biometria: bioAtiva }));
+            alert("Trader Class: Registo efetuado com sucesso.");
             alternarTelasAutenticacao(false);
             document.getElementById('login-user').value = email;
         }
 
         function autenticarApp(isBiometric) {
             let dadosSalvos = localStorage.getItem('usuario_century');
-            if (!dadosSalvos) { alert("Nenhum registro encontrado."); return; }
+            if (!dadosSalvos) { alert("Nenhum operador encontrado."); return; }
             let usuario = JSON.parse(dadosSalvos);
 
-            if (isBiometric) {
-                if (!usuario.biometria) { alert("Biometria não ativada."); return; }
-                document.querySelector('.biometric-icon').style.borderColor = 'var(--gain-color)';
-            } else {
-                let emailInput = document.getElementById('login-user').value.trim();
-                let passInput = document.getElementById('login-pass').value.trim();
-                if (emailInput !== usuario.email || passInput !== usuario.senha) { alert("Acesso negado."); return; }
+            if (isBiometric && !usuario.biometria) { alert("Biometria não associada."); return; }
+            if (!isBiometric && (document.getElementById('login-user').value.trim() !== usuario.email || document.getElementById('login-pass').value.trim() !== usuario.senha)) {
+                alert("Credenciais incorretas."); return;
             }
 
             localStorage.setItem('usuario_logado', 'true');
@@ -750,12 +600,9 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-interface').style.display = 'flex';
             
-            noSleep.enable();
-            inicializarGraficos();
-            conectarWebSocket();
-            atualizarPainelVisual();
-            atualizarTabelaHistorico();
-            logTerminal("Terminal operacional autorizado e sessão restaurada.");
+            try { noSleep.enable(); } catch(e){}
+            inicializarGraficos(); conectarWebSocket(); atualizarPainelVisual(); atualizarTabelaHistorico(); renderizarListaHorarios();
+            logTerminal("Sessão autenticada. Bem-vindo ao Trader Class.");
         }
 
         function mudarAba(tabId) {
@@ -785,7 +632,7 @@
 
         async function enviarTelegram(msg) {
             const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`;
-            try { await fetch(url); } catch (e) { console.error(e); }
+            try { await fetch(url); } catch (e) {}
         }
 
         function inicializarGraficos() {
@@ -793,294 +640,222 @@
             chartPrincipal = new Chart(ctx1, {
                 type: 'line',
                 data: { 
-                    labels: [], 
-                    datasets: [
-                        { label: 'Ouro', data: [], borderColor: '#FFD700', borderWidth: 2, pointRadius: 0, tension: 0.1, fill: false },
-                        { label: 'Máxima', data: [], borderColor: '#FFFFFF', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
-                        { label: 'Mínima', data: [], borderColor: '#627D98', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
-                        { label: 'Take', data: [], borderColor: '#10B981', borderDash: [2, 2], borderWidth: 1.5, pointRadius: 0, fill: false },
-                        { label: 'Loss', data: [], borderColor: '#EF4444', borderDash: [2, 2], borderWidth: 1.5, pointRadius: 0, fill: false }
+                    labels: [], datasets: [
+                        { label: 'XAUUSD', data: [], borderColor: '#D4AF37', borderWidth: 2, pointRadius: 0, tension: 0.1, fill: false },
+                        { label: 'Max', data: [], borderColor: '#FFF', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
+                        { label: 'Min', data: [], borderColor: '#FFF', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
+                        { label: 'Take', data: [], borderColor: '#10B981', borderDash: [2, 2], borderWidth: 2, pointRadius: 0, fill: false },
+                        { label: 'Stop', data: [], borderColor: '#EF4444', borderDash: [2, 2], borderWidth: 2, pointRadius: 0, fill: false }
                     ] 
                 },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } }, 
-                    scales: { 
-                        x: { display: false }, 
-                        y: { grid: { color: 'rgba(255,255,255,0.01)' }, ticks: { color: '#6B7280', font: { size: 9, family: 'JetBrains Mono' } } } 
-                    } 
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9CA3AF', font: { size: 9 } } } } }
             });
 
             const ctx2 = document.getElementById('chartPatrimonio').getContext('2d');
             chartPatrimonio = new Chart(ctx2, {
                 type: 'line',
-                data: { labels: Array(historicoBanca.length).fill(""), datasets: [{ data: historicoBanca, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.01)', borderWidth: 2, fill: true, pointRadius: 1 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#9CA3AF', font: { size: 10, family: 'JetBrains Mono' } } } } }
+                data: { labels: Array(historicoBanca.length).fill(""), datasets: [{ data: historicoBanca, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.05)', borderWidth: 2, fill: true, pointRadius: 1 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
             });
         }
 
         function conectarWebSocket() {
             if (ws) ws.close();
             ws = new WebSocket('wss://stream.binance.com:9443/ws/paxgusdt@ticker');
-            
             ws.onmessage = (event) => {
                 let dados = JSON.parse(event.data);
                 precoReal = parseFloat(dados.c) + offsetPreco;
-                document.getElementById('price-xauusd').innerText = "$ " + precoReal.toFixed(2);
-                
-                let rsiSimulado = (50 + Math.sin(Date.now() / 5000) * 15 + (Math.random() * 2)).toFixed(1);
-                if(document.getElementById('lbl-rsi-val')) {
-                    document.getElementById('lbl-rsi-val').innerText = rsiSimulado;
-                    document.getElementById('bar-rsi').style.width = rsiSimulado + "%";
-                    document.getElementById('lbl-vol-val').innerText = "K" + (4 + Math.random() * 3).toFixed(1);
-                }
-
-                atualizarMercadoVivo();
-
                 historicoPrecos.push(precoReal);
-                chartPrincipal.data.labels.push("");
-                chartPrincipal.data.datasets[0].data.push(precoReal);
-                
-                if (historicoPrecos.length > 50) {
-                    historicoPrecos.shift();
-                    chartPrincipal.data.labels.shift();
-                    chartPrincipal.data.datasets[0].data.shift();
-                }
-
-                redesenharLinhasEstrategicas();
-                chartPrincipal.update('none');
-                executarRegrasEstrategia();
+                chartPrincipal.data.labels.push(""); chartPrincipal.data.datasets[0].data.push(precoReal);
+                if (historicoPrecos.length > 50) { historicoPrecos.shift(); chartPrincipal.data.labels.shift(); chartPrincipal.data.datasets[0].data.shift(); }
+                redesenharLinhasEstrategicas(); chartPrincipal.update('none'); executarRegrasEstrategia();
             };
             ws.onclose = () => { setTimeout(conectarWebSocket, 4000); };
         }
 
-        function atualizarMercadoVivo() {
-            let assets = ['eurusd', 'gbpusd', 'usdjpy', 'us500', 'nas100', 'btcusd'];
-            assets.forEach(asset => {
-                let multiplier = asset === 'btcusd' ? 12.0 : 0.0002;
-                if(asset==='us500' || asset==='nas100') multiplier = 0.25;
-                let delta = (Math.random() * 2 - 1) * multiplier;
-                basePrices[asset] += delta;
-                let elem = document.getElementById(`price-${asset}`);
-                if(elem) {
-                    let precision = asset.includes('usd') && !asset.includes('jpy') && !asset.includes('btc') ? 4 : 2;
-                    elem.innerText = basePrices[asset].toFixed(precision);
-                }
-            });
-        }
-
         function redesenharLinhasEstrategicas() {
             let len = historicoPrecos.length;
-            chartPrincipal.data.datasets[1].data = (maxCanal !== -Infinity && maxCanal !== null) ? Array(len).fill(maxCanal) : [];
-            chartPrincipal.data.datasets[2].data = (minCanal !== Infinity && minCanal !== null) ? Array(len).fill(minCanal) : [];
+            chartPrincipal.data.datasets[1].data = (maxCanal !== -Infinity) ? Array(len).fill(maxCanal) : [];
+            chartPrincipal.data.datasets[2].data = (minCanal !== Infinity) ? Array(len).fill(minCanal) : [];
             chartPrincipal.data.datasets[3].data = alvoOperacao > 0 ? Array(len).fill(alvoOperacao) : [];
             chartPrincipal.data.datasets[4].data = stopOperacao > 0 ? Array(len).fill(stopOperacao) : [];
         }
 
-        function executarRegrasEstrategia() {
-            let badge = document.getElementById('lbl-status');
-            let globalHud = document.getElementById('global-operation-hud');
-            let globalHudTxt = document.getElementById('txt-global-hud-content');
-            
-            if (statusRobo === "BLOQUEADO_DIARIO") {
-                if(badge) { badge.className = "status-badge status-locked"; badge.innerText = "🛑 DRAWDOW LIMIT"; }
-                globalHud.style.display = "flex";
-                globalHud.className = "operation-hud-alert hud-sell";
-                globalHudTxt.innerText = "TRAVA DE RISCO DIÁRIA ATIVADA";
-                return;
-            }
+        function salvarHorarioAtualTemporario() {
+            localStorage.setItem('ultimoInputInicio', document.getElementById('cfg-hora-ini').value);
+            localStorage.setItem('ultimoInputFim', document.getElementById('cfg-hora-fim').value);
+        }
 
-            let agora = new Date();
-            let horaAtual = (agora.getHours() < 10 ? '0' : '') + agora.getHours() + ":" + (agora.getMinutes() < 10 ? '0' : '') + agora.getMinutes();
+        function adicionarHorarioLista() {
             let hIni = document.getElementById('cfg-hora-ini').value;
             let hFim = document.getElementById('cfg-hora-fim').value;
+            if (hIni >= hFim) { alert("Horário de início deve ser menor que o do fim."); return; }
+            agendaHorarios.push({ inicio: hIni, fim: hFim });
+            agendaHorarios.sort((a, b) => a.inicio.localeCompare(b.inicio));
+            localStorage.setItem('agendaHorarios', JSON.stringify(agendaHorarios));
+            renderizarListaHorarios(); logTerminal(`Adicionado à agenda: ${hIni}-${hFim}`);
+        }
 
-            if (statusRobo === "AGUARDANDO_HORA" && horaAtual >= hIni && horaAtual < hFim) {
-                statusRobo = "CAPTURANDO";
-                maxCanal = -Infinity; minCanal = Infinity;
-                localStorage.setItem('statusRobo', statusRobo);
-                logTerminal("Filtro cronometrado acionado. Iniciando Varredura.", "alert");
+        function removerHorarioLista(index) {
+            agendaHorarios.splice(index, 1);
+            localStorage.setItem('agendaHorarios', JSON.stringify(agendaHorarios));
+            renderizarListaHorarios();
+        }
+
+        function renderizarListaHorarios() {
+            const tbody = document.getElementById('lista-horarios-rows'); tbody.innerHTML = "";
+            if (agendaHorarios.length === 0) { tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">Agenda livre.</td></tr>`; return; }
+            agendaHorarios.forEach((item, index) => {
+                tbody.innerHTML += `<tr><td class="mono">${item.inicio}</td><td class="mono">${item.fim}</td><td style="text-align: right;"><button class="btn-remove-time" onclick="removerHorarioLista(${index})"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+            });
+        }
+
+        function executarRegrasEstrategia() {
+            let globalHud = document.getElementById('global-operation-hud');
+            let globalHudTxt = document.getElementById('txt-global-hud-content');
+            let agora = new Date();
+            let horaAtual = (agora.getHours() < 10 ? '0' : '') + agora.getHours() + ":" + (agora.getMinutes() < 10 ? '0' : '') + agora.getMinutes();
+
+            let minRest = (tempoVela - 1) - (agora.getMinutes() % tempoVela);
+            let segRest = 60 - agora.getSeconds();
+            document.getElementById('lbl-vela-timer').innerText = (minRest < 10 ? "0":"") + minRest + ":" + (segRest < 10 ? "0":"") + segRest;
+
+            let turnoAtivo = agendaHorarios.find(h => horaAtual >= h.inicio && horaAtual < h.fim);
+
+            if (statusRobo === "AGUARDANDO_HORA" && turnoAtivo) {
+                statusRobo = "CAPTURANDO"; maxCanal = -Infinity; minCanal = Infinity; localStorage.setItem('statusRobo', statusRobo);
+                logTerminal(`Início do turno. Mapeando canal a partir das ${turnoAtivo.inicio}.`, "alert");
             }
 
             if (statusRobo === "CAPTURANDO") {
-                globalHud.style.display = "flex";
-                globalHud.className = "operation-hud-alert";
-                globalHud.style.borderColor = "var(--gold-accent)";
-                globalHudTxt.innerHTML = `<span style="color:var(--gold-accent)">MEDINDO CANAL ATIVO (${horaAtual} ➔ ${hFim})</span>`;
-
-                if (badge) { badge.className = "status-badge status-capturing"; badge.innerText = `Varrendo Canal...`; }
-                if (precoReal > maxCanal) maxCanal = precoReal;
-                if (precoReal < minCanal) minCanal = precoReal;
-                
-                document.getElementById('lbl-max').innerText = "$ " + maxCanal.toFixed(2);
-                document.getElementById('lbl-min').innerText = "$ " + minCanal.toFixed(2);
-                localStorage.setItem('maxCanal', maxCanal);
-                localStorage.setItem('minCanal', minCanal);
-
-                if (horaAtual >= hFim) {
-                    statusRobo = "ESPERANDO_ROMPIMENTO";
-                    localStorage.setItem('statusRobo', statusRobo);
-                    calcularLoteSugerido();
-                    logTerminal(`Canal medido com sucesso.`);
+                let turnoAindaAtivo = agendaHorarios.find(h => horaAtual >= h.inicio && horaAtual < h.fim);
+                if (!turnoAindaAtivo) {
+                    statusRobo = "ESPERANDO_ROMPIMENTO"; localStorage.setItem('statusRobo', statusRobo);
+                    logTerminal(`Fechamento do canal de captura. Máx $${maxCanal.toFixed(2)} | Mín $${minCanal.toFixed(2)}.`);
+                } else {
+                    globalHud.style.display = "flex"; globalHud.className = "operation-hud-alert hud-idle";
+                    globalHudTxt.innerHTML = `<span><i class="fa-solid fa-radar fa-spin"></i> MAPEANDO CANAL XAUUSD (${horaAtual})</span>`;
+                    if (precoReal > maxCanal) maxCanal = precoReal; if (precoReal < minCanal) minCanal = precoReal;
+                    document.getElementById('lbl-max').innerText = "$ " + maxCanal.toFixed(2);
+                    document.getElementById('lbl-min').innerText = "$ " + minCanal.toFixed(2);
+                    localStorage.setItem('maxCanal', maxCanal); localStorage.setItem('minCanal', minCanal);
                 }
             }
 
             if (statusRobo === "ESPERANDO_ROMPIMENTO") {
-                globalHud.style.display = "flex";
-                globalHudTxt.innerText = "AGUARDANDO VIOLAÇÃO DO SUPORTE / RESISTÊNCIA";
-                if(badge) { badge.className = "status-badge status-waiting"; badge.innerText = "Aguardando Rompimento"; }
-
-                if (agora.getSeconds() === 0 && (agora.getMinutes() % parseInt(document.getElementById('cfg-tempo').value) === 0)) {
-                    let pontosCanal = maxCanal - minCanal;
-                    if (precoReal > maxCanal) {
-                        tipoEntrada = "COMPRA";
-                        alvoOperacao = maxCanal + pontosCanal; stopOperacao = minCanal;
-                        dispararOrdemAoVivo();
-                    } else if (precoReal < minCanal) {
-                        tipoEntrada = "VENDA";
-                        alvoOperacao = minCanal - pontosCanal; stopOperacao = maxCanal;
-                        dispararOrdemAoVivo();
-                    }
+                globalHud.style.display = "flex"; globalHud.className = "operation-hud-alert hud-idle"; 
+                globalHudTxt.innerHTML = `<span>AGUARDANDO FECHAMENTO DE VELA FORA DO CANAL</span>`;
+                if (agora.getSeconds() === 0 && (agora.getMinutes() % tempoVela === 0)) {
+                    let tamanho = maxCanal - minCanal;
+                    if (precoReal > maxCanal) { tipoEntrada = "COMPRA"; precoEntrada = precoReal; alvoOperacao = precoReal + tamanho; stopOperacao = minCanal; dispararOrdemAoVivo(); } 
+                    else if (precoReal < minCanal) { tipoEntrada = "VENDA"; precoEntrada = precoReal; alvoOperacao = precoReal - tamanho; stopOperacao = maxCanal; dispararOrdemAoVivo(); }
                 }
             }
 
             if (statusRobo === "EM_OPERACAO") {
-                if(badge) { badge.className = "status-badge status-running"; badge.innerText = `Ordem Executada: ${tipoEntrada}`; }
-                
-                globalHud.style.display = "flex";
+                globalHud.style.display = "flex"; let pts = 0;
                 if(tipoEntrada === "COMPRA") {
-                    globalHud.className = "operation-hud-alert hud-buy";
-                    globalHudTxt.innerHTML = `🟢 OPERAÇÃO ATIVA: COMPRA XAUUSD | ENTRADA: ${maxCanal.toFixed(2)} | ALVO: ${alvoOperacao.toFixed(2)}`;
-                    if (precoReal >= alvoOperacao) liquidarTrade(true);
-                    else if (precoReal <= stopOperacao) liquidarTrade(false);
+                    pts = Math.round((precoReal - precoEntrada) * 100);
+                    globalHud.className = "operation-hud-alert hud-buy"; globalHudTxt.innerHTML = `🟢 COMPRA | ENTRADA: ${precoEntrada.toFixed(2)} | PONTOS: ${pts>0?'+':''}${pts}`;
+                    if (precoReal >= alvoOperacao) liquidarTrade(true); else if (precoReal <= stopOperacao) liquidarTrade(false);
                 } else {
-                    globalHud.className = "operation-hud-alert hud-sell";
-                    globalHudTxt.innerHTML = `🔴 OPERAÇÃO ATIVA: VENDA XAUUSD | ENTRADA: ${minCanal.toFixed(2)} | ALVO: ${alvoOperacao.toFixed(2)}`;
-                    if (precoReal <= alvoOperacao) liquidarTrade(true);
-                    else if (precoReal >= stopOperacao) liquidarTrade(false);
+                    pts = Math.round((precoEntrada - precoReal) * 100);
+                    globalHud.className = "operation-hud-alert hud-sell"; globalHudTxt.innerHTML = `🔴 VENDA | ENTRADA: ${precoEntrada.toFixed(2)} | PONTOS: ${pts>0?'+':''}${pts}`;
+                    if (precoReal <= alvoOperacao) liquidarTrade(true); else if (precoReal >= stopOperacao) liquidarTrade(false);
                 }
             }
-
-            if(statusRobo === "DESLIGADO" && statusRobo !== "BLOQUEADO_DIARIO") {
-                globalHud.style.display = "none";
-            }
-        }
-
-        function calcularLoteSugerido() {
-            let pts = Math.abs(maxCanal - minCanal) * 100;
-            if (pts <= 0) return;
-            let lote = riscoFixo / pts;
-            document.getElementById('lbl-lote').innerText = "LOTE SUGERIDO: " + Math.max(0.01, lote).toFixed(2);
+            if(statusRobo === "DESLIGADO") { globalHud.style.display = "none"; }
         }
 
         function dispararOrdemAoVivo() {
-            statusRobo = "EM_OPERACAO";
-            localStorage.setItem('statusRobo', statusRobo);
-            localStorage.setItem('alvoOperacao', alvoOperacao);
-            localStorage.setItem('stopOperacao', stopOperacao);
-            localStorage.setItem('tipoEntrada', tipoEntrada);
-
-            document.getElementById('lbl-alvo').innerText = "$ " + alvoOperacao.toFixed(2);
-            document.getElementById('lbl-stop').innerText = "$ " + stopOperacao.toFixed(2);
-            logTerminal(`Rompimento Confirmado! Motor posicionado in ${tipoEntrada}`, "alert");
-            enviarTelegram(`🚀 *Century Trade Start*\nAtivo: XAUUSD\nTipo: ${tipoEntrada}\nEntrada: $${precoReal.toFixed(2)}`);
+            statusRobo = "EM_OPERACAO"; localStorage.setItem('statusRobo', statusRobo);
+            localStorage.setItem('alvoOperacao', alvoOperacao); localStorage.setItem('stopOperacao', stopOperacao);
+            localStorage.setItem('tipoEntrada', tipoEntrada); localStorage.setItem('precoEntrada', precoEntrada);
+            document.getElementById('lbl-alvo').innerText = "$ " + alvoOperacao.toFixed(2); document.getElementById('lbl-stop').innerText = "$ " + stopOperacao.toFixed(2);
+            logTerminal(`Confirmação positiva. Abertura de ordem: ${tipoEntrada} em $${precoEntrada.toFixed(2)}`);
+            enviarTelegram(`🔥 *Trader Class Alert*\nAtivo: XAUUSD\nDireção: ${tipoEntrada}\nPreço: $${precoEntrada.toFixed(2)}`);
         }
 
         function liquidarTrade(foiGain) {
-            let resultadoFinanceiro = foiGain ? (riscoFixo * 0.95) : riscoFixo;
-            if (foiGain) { banca += resultadoFinanceiro; logTerminal(`Take Profit Atingido! +$${resultadoFinanceiro.toFixed(2)}`, "success"); }
-            else { banca -= resultadoFinanceiro; logTerminal(`Stop Loss Atrapalhado. -$${resultadoFinanceiro.toFixed(2)}`, "alert"); }
+            let diff = foiGain ? Math.abs(precoEntrada - alvoOperacao) : Math.abs(precoEntrada - stopOperacao);
+            let pts = Math.round(diff * 100); let fin = riscoFixo; 
 
-            operacoes.unshift({ horario: new Date().toLocaleTimeString(), ativo: 'XAUUSD', tipo: tipoEntrada, resultado: foiGain ? 'GAIN' : 'LOSS', valor: resultadoFinanceiro });
+            if (foiGain) { banca += (riscoFixo * 0.95); logTerminal(`Alvo alcançado: Take Profit. +${pts} Pts.`, "success"); enviarTelegram(`🎯 *TAKE PROFIT*\nLucro: +${pts} Pontos!`); } 
+            else { banca -= riscoFixo; pts = -pts; logTerminal(`Saída de emergência: Stop Loss. ${pts} Pts.`, "alert"); enviarTelegram(`❌ *STOP LOSS*\nPerda: ${pts} Pontos.`); }
+
+            operacoes.unshift({ timestamp: Date.now(), horario: new Date().toLocaleTimeString(), ativo: 'XAUUSD', tipo: tipoEntrada, resultado: foiGain ? 'GAIN' : 'LOSS', pontos: pts, valor: fin });
             historicoBanca.push(parseFloat(banca.toFixed(2)));
             
-            verificarDrawdownDiario();
-
-            maxCanal = -Infinity; minCanal = Infinity; alvoOperacao = 0; stopOperacao = 0; tipoEntrada = "";
-            statusRobo = "DESLIGADO";
-            localStorage.setItem('statusRobo', statusRobo);
-
-            salvarDadosPainel();
-            atualizarPainelVisual();
-            atualizarTabelaHistorico();
-        }
-
-        function verificarDrawdownDiario() {
-            let totalPerdas = operacoes.filter(o => o.resultado === 'LOSS').reduce((acc, o) => acc + o.valor, 0);
-            if (totalPerdas >= (banca * parseFloat(document.getElementById('cfg-perfil').value))) {
-                statusRobo = "BLOQUEADO_DIARIO";
-                localStorage.setItem('statusRobo', statusRobo);
-            }
+            maxCanal = -Infinity; minCanal = Infinity; alvoOperacao = 0; stopOperacao = 0; tipoEntrada = ""; precoEntrada = 0;
+            statusRobo = "AGUARDANDO_HORA"; localStorage.setItem('statusRobo', statusRobo);
+            salvarDadosPainel(); atualizarPainelVisual(); atualizarTabelaHistorico(); logTerminal("Voltando à varredura de agenda.");
         }
 
         function atualizarTabelaHistorico() {
-            const container = document.getElementById('history-rows-home');
-            if (operacoes.length === 0) return;
-            container.innerHTML = "";
-            operacoes.slice(0, 3).forEach(op => {
-                let row = document.createElement('tr');
-                row.innerHTML = `<td class="mono">${op.horario}</td><td><b>${op.ativo}</b></td><td><span style="color:${op.tipo==='COMPRA'?'var(--gain-color)':'var(--loss-color)'}">${op.tipo}</span></td><td><span class="badge-result ${op.resultado==='GAIN'?'badge-gain':'badge-loss'}">$${op.valor.toFixed(2)}</span></td>`;
-                container.appendChild(row);
+            const container = document.getElementById('history-rows-home'); if (operacoes.length === 0) return; container.innerHTML = "";
+            operacoes.slice(0, 4).forEach(op => {
+                container.innerHTML += `<tr><td class="mono">${op.horario}</td><td><b>${op.ativo}</b></td><td><span style="color:${op.tipo==='COMPRA'?'var(--gain-color)':'var(--loss-color)'}">${op.tipo}</span></td><td><span class="badge-result ${op.resultado==='GAIN'?'badge-gain':'badge-loss'}">${op.pontos > 0 ? '+':''}${op.pontos} Pts</span></td></tr>`;
             });
+            document.getElementById('points-global-counter').innerText = operacoes.reduce((a, b) => a + b.pontos, 0) + " PONTOS XAUUSD";
         }
 
-        function salvarConfiguracoes() {
-            banca = parseFloat(document.getElementById('cfg-banca').value) || 1000;
-            riscoFixo = parseFloat(document.getElementById('cfg-risco').value) || 20;
-            offsetPreco = parseFloat(document.getElementById('cfg-offset').value) || 0;
-            salvarDadosPainel();
-            atualizarPainelVisual();
+        function filtrarRelatorio(periodo) {
+            document.querySelectorAll('.btn-filter-period').forEach(b => b.classList.remove('active'));
+            document.getElementById('flt-' + periodo).classList.add('active');
+
+            let agora = new Date(); let limitTimestamp = 0;
+            if (periodo === 'hoje') { limitTimestamp = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate()).getTime(); } 
+            else if (periodo === '7d') { limitTimestamp = Date.now() - (7 * 24 * 60 * 60 * 1000); } 
+            else if (periodo === '30d') { limitTimestamp = Date.now() - (30 * 24 * 60 * 60 * 1000); } 
+
+            let filtrados = operacoes.filter(op => op.timestamp >= limitTimestamp);
+            let somaPontos = filtrados.reduce((acc, op) => acc + op.pontos, 0);
+
+            document.getElementById('lbl-rep-pontos').innerText = (somaPontos > 0 ? "+":"") + somaPontos + " pts";
+            document.getElementById('lbl-rep-qtd').innerText = filtrados.length;
+            document.getElementById('lbl-rep-pontos').style.color = somaPontos >= 0 ? "var(--gain-color)" : "var(--loss-color)";
+        }
+
+        function salvarConfiguracoesGlobal() {
+            banca = parseFloat(document.getElementById('cfg-banca').value) || 1000; riscoFixo = parseFloat(document.getElementById('cfg-risco').value) || 20;
+            offsetPreco = parseFloat(document.getElementById('cfg-offset').value) || 0; tempoVela = parseInt(document.getElementById('cfg-tempo').value) || 1;
+            salvarDadosPainel(); atualizarPainelVisual();
         }
 
         function salvarDadosPainel() {
-            localStorage.setItem('banca', banca);
-            localStorage.setItem('risco', riscoFixo);
-            localStorage.setItem('offset', offsetPreco);
-            localStorage.setItem('operacoes', JSON.stringify(operacoes));
-            localStorage.setItem('historicoBanca', JSON.stringify(historicoBanca));
+            localStorage.setItem('banca', banca); localStorage.setItem('risco', riscoFixo); localStorage.setItem('offset', offsetPreco);
+            localStorage.setItem('tempoVela', tempoVela); localStorage.setItem('operacoes', JSON.stringify(operacoes)); localStorage.setItem('historicoBanca', JSON.stringify(historicoBanca));
         }
 
         function atualizarPainelVisual() {
             document.getElementById('txt-banca-hero').innerText = "$ " + banca.toFixed(2);
-            document.getElementById('cfg-banca').value = banca.toFixed(2);
-            document.getElementById('cfg-risco').value = riscoFixo;
-            document.getElementById('cfg-offset').value = offsetPreco;
+            document.getElementById('cfg-banca').value = banca.toFixed(2); document.getElementById('cfg-risco').value = riscoFixo;
+            document.getElementById('cfg-offset').value = offsetPreco; document.getElementById('cfg-tempo').value = tempoVela;
+            document.getElementById('cfg-hora-ini').value = ultimoInputInicio; document.getElementById('cfg-hora-fim').value = ultimoInputFim;
             document.getElementById('lbl-max').innerText = maxCanal !== -Infinity ? "$ " + maxCanal.toFixed(2) : "-";
             document.getElementById('lbl-min').innerText = minCanal !== Infinity ? "$ " + minCanal.toFixed(2) : "-";
             document.getElementById('lbl-alvo').innerText = alvoOperacao > 0 ? "$ " + alvoOperacao.toFixed(2) : "-";
             document.getElementById('lbl-stop').innerText = stopOperacao > 0 ? "$ " + stopOperacao.toFixed(2) : "-";
             if (chartPatrimonio) { chartPatrimonio.data.datasets[0].data = historicoBanca; chartPatrimonio.update(); }
+            document.getElementById('points-global-counter').innerText = operacoes.reduce((a, b) => a + b.pontos, 0) + " PONTOS XAUUSD";
         }
 
-        function armarProximoCiclo() {
-            if (statusRobo === "BLOQUEADO_DIARIO") { alert("Bloqueio ativo."); return; }
-            statusRobo = "AGUARDANDO_HORA";
-            maxCanal = -Infinity; minCanal = Infinity; alvoOperacao = 0; stopOperacao = 0; tipoEntrada = "";
-            localStorage.setItem('statusRobo', statusRobo);
-            atualizarPainelVisual();
-            logTerminal("Estratégia Inicializada via painel de Controle.");
-            alert("Motor Operacional Century Inicializado!");
+        function ativarMotorAutonomo() {
+            statusRobo = "AGUARDANDO_HORA"; maxCanal = -Infinity; minCanal = Infinity; alvoOperacao = 0; stopOperacao = 0; tipoEntrada = ""; precoEntrada = 0;
+            localStorage.setItem('statusRobo', statusRobo); atualizarPainelVisual();
+            logTerminal("Modo automático ativado."); alert("Trader Class: O motor autônomo está ativo e lendo a agenda.");
         }
 
         function reiniciarDeFabrica() {
-            if (confirm("Deseja redefinir as métricas de mercado? (Seu operador continuará conectado)")) {
-                let backup = localStorage.getItem('usuario_century');
-                localStorage.clear();
-                if(backup) localStorage.setItem('usuario_century', backup);
-                window.location.reload();
+            if (confirm("Deseja redefinir todo o sistema para o padrão de fábrica?")) {
+                let backup = localStorage.getItem('usuario_century'); localStorage.clear();
+                if(backup) localStorage.setItem('usuario_century', backup); window.location.reload();
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            let dadosSalvos = localStorage.getItem('usuario_century');
-            let loginAtivo = localStorage.getItem('usuario_logado');
-
-            if (dadosSalvos && loginAtivo === 'true') {
-                let usuario = JSON.parse(dadosSalvos);
-                inicializarSessaoAtiva(usuario.nome);
-            }
+            let dadosSalvos = localStorage.getItem('usuario_century'); let loginAtivo = localStorage.getItem('usuario_logado');
+            if (dadosSalvos && loginAtivo === 'true') { inicializarSessaoAtiva(JSON.parse(dadosSalvos).nome); }
         });
     </script>
 </body>
